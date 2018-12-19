@@ -7,9 +7,27 @@
     "start": "electron .",
     "test": "npm test"
   },
-  "author": "Alex Merkert",
-  "license": "ISC",
+  "build": {
+    "appId": "game.electron",
+    "mac": {
+      "category": "sports.games"
+    },
+    "linux": {
+      "target": [
+        "AppImage",
+        "deb"
+      ],
+      "maintainer": ""
+    }
+  },
   "devDependencies": {
-    "electron": "^3.0.13"
-  }
+    "electron": "^3.0.13",
+    "electron-builder": "^20.38.4"
+  },
+  "author": {
+    "name": "Alex Merkert",
+    "email": "alex@buttonpunchgames.com",
+    "url": "http://buttonpunchgames.com/"
+  },
+  "license": "ISC"
 }
