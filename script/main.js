@@ -42,9 +42,11 @@ window.addEventListener('keydown', event => {
     }
 });
 
+var lastTime = (new Date()).getTime();
 var update = function () {
   //------UPDATE------//
   var time = (new Date()).getTime();
+  var diff = time - lastTime;
   setTimeout(update, 16);
 };
 
