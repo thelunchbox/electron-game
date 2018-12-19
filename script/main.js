@@ -44,16 +44,17 @@ window.addEventListener('keydown', event => {
 
 var lastTime = (new Date()).getTime();
 var update = function () {
-  //------UPDATE------//
   var time = (new Date()).getTime();
   var diff = time - lastTime;
+  //------UPDATE YOUR GAME STATE HERE------//
+  lastTime = time;
   setTimeout(update, 16);
 };
 
 var draw = function (time) {
-  //-------DRAW-------//
   var context = canvas.getContext('2d');
   context.clearRect(0, 0, canvas.width, canvas.height);
+  //----------DRAW YOUR GAME HERE----------//
   window.requestAnimationFrame(draw);
 };
 
