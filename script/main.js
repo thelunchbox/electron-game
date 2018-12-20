@@ -1,4 +1,4 @@
-
+const { remote } = require('electron');
 
 var canvas = document.createElement('canvas');
 canvas.width = 1600;
