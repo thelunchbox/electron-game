@@ -30,6 +30,9 @@ class Renderer {
         this.canvas = canvas;
         this.context = canvas.getContext('2d');
 
+        this.arc = (...args) => this.context.arc(...args);
+        this.arcTo = (...args) => this.context.arcTo(...args);
+        this.bezierCurveTo = (...args) => this.context.bezierCurveTo(...args);
         this.clearRect = (...args) => this.context.clearRect(...args);
         this.clip = (...args) => this.context.clip(...args);
         this.createImageData = (...args) => this.context.createImageData(...args);
@@ -161,6 +164,27 @@ class Renderer {
     strokeAndFillText(text, x, y) {
         this.context.strokeText(text, x, y);
         this.context.fillText(text, x, y);
+    }
+
+    fillCircle(x, y, radius) {
+        this.arc(x, y, radius, 0, Math.PI * 2);
+        this.fill();
+    }
+
+    strokeCircle(x, y, radius) {
+        this.arc(x, y, radius, 0, Math.PI * 2);
+        this.stroke();
+    }
+
+    strokeAndFillCircle(x, y, radius) {
+        this.arc(x, y, radius, 0, Math.PI * 2);
+        this.stroke();
+        this.fill();
+    }
+
+    strokeAndFillRect(x, y, width, height) {
+        this.strokeRect(x, y, width, height);
+        this.fillRect(x, y, width, height);
     }
 }
 

@@ -12,7 +12,14 @@ class Title extends State {
 
     draw(renderer) {
         renderer.isolatePath(() => {
-            renderer.strokeAndFillText('GAME TITLE', renderer.center.x, renderer.center.y);
+            renderer.strokeAndFillText('Frog Game', renderer.center.x, renderer.center.y);
+            renderer.isolatePath(() => {
+                renderer.strokeAndFillText('Press Any Key', renderer.center.x, renderer.center.y + 100);
+            }, {
+                font: '36pt Arial',
+                globalAlpha: Math.sin(this.frame / 20) / 2 + 0.5,
+                strokeStyle: '#f00',
+            })
         }, {
             font: '72pt Arial',
             fillStyle: '#fff',
