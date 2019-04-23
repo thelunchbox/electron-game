@@ -15,6 +15,8 @@ class Game extends State {
         };
     }
 
+    // NEXT: Give the frog a tongue that sticks out!
+
     update(dt, keys) {
         if (keys.includes(38)) {
             this.player.y -= SPEED;
