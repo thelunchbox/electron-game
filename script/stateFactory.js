@@ -1,10 +1,6 @@
+const STATES = require('./states');
 const Title = require('./states/title');
 const Game = require('./states/game');
-
-const STATES = {
-    TITLE: 1,
-    GAME: 2,
-};
 
 const getStartingState = () => new Title({});
 
@@ -20,5 +16,4 @@ const getNextState = ({ next, args }) => {
 module.exports = {
     getNextState,
     getStartingState,
-    STATES,
 };
