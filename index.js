@@ -5,8 +5,8 @@ const {app, BrowserWindow} = require('electron');
 let mainWindow;
 
 function createWindow () {
-  mainWindow = new BrowserWindow({width: 1600, height: 900})
-  mainWindow.loadFile('index.html')
+  mainWindow = new BrowserWindow({width: 1600, height: 900});
+  mainWindow.loadFile('index.html');
   // mainWindow.webContents.openDevTools()
 
   mainWindow.on('closed', function () {

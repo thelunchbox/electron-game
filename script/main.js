@@ -1,30 +1,10 @@
 const { remote } = require('electron');
+const { getStartingState, getNextState } = require('./stateFactory');
+const Renderer = require('./renderer');
+const electronWindow = remote.getCurrentWindow();
 
-var canvas = document.createElement('canvas');
-canvas.width = 1600;
-canvas.height = 900;
-document.body.appendChild(canvas);
-
-var resizeCanvas = function () {
-    var normalRatio = canvas.width / canvas.height;
-    var newRatio = window.innerWidth / window.innerHeight;
-    var scale = 1;
-    if (newRatio < normalRatio) {
-        // tall and skinny
-        scale = window.innerWidth / canvas.width;
-    } else if (newRatio >= normalRatio) {
-        // short and fat
-        scale = window.innerHeight / canvas.height;
-    }
-    canvas.style.transform = 'translate(-50%, -50%) scale(' + scale + ', ' + scale + ')';
-}
-
-window.addEventListener('resize', event => {
-    resizeCanvas();
-});
-
-window.addEventListener('keydown', event => {
-    let keyCode = event.keyCode;
+const keys = [];
+window.addEventListener('keydown', ({ keyCode }) => {
     switch (keyCode) {
         case 27:
             electronWindow.close();
@@ -39,25 +19,41 @@ window.addEventListener('keydown', event => {
         case 123: // F12
             remote.getCurrentWebContents().openDevTools();
             break;
+        default: // all others
+            keys.push(keyCode);
+            break;
     }
 });
 
-var lastTime = (new Date()).getTime();
-var update = function () {
-  var time = (new Date()).getTime();
-  var diff = time - lastTime;
-  //------UPDATE YOUR GAME STATE HERE------//
-  lastTime = time;
-  setTimeout(update, 16);
+window.addEventListener('keyup', ({ keyCode }) => {
+    const index = keys.indexOf(keyCode);
+    if (index < 0) return;
+    keys.splice(index, 1);
+});
+
+const renderer = new Renderer(document.body);
+let state = getStartingState();
+
+let last = (new Date()).getTime();
+const update = () => {
+    const time = (new Date()).getTime();
+    const dt = time - last;
+
+    // Update the current game state - it should return the new state type and args if we need to change
+    const next = state.update(dt, keys);
+    if (next) {
+        state = getNextState(next);
+    }
+
+    last = time;
+    setTimeout(update, 16);
 };
 
-var draw = function (time) {
-  var context = canvas.getContext('2d');
-  context.clearRect(0, 0, canvas.width, canvas.height);
-  //----------DRAW YOUR GAME HERE----------//
-  window.requestAnimationFrame(draw);
+const draw = () => {
+    renderer.reset();
+    state.draw(renderer);
+    window.requestAnimationFrame(draw);
 };
 
-resizeCanvas();
 update();
 requestAnimationFrame(draw);
