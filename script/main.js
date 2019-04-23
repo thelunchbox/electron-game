@@ -2,6 +2,7 @@ const { remote } = require('electron');
 const { getStartingState, getNextState } = require('./stateFactory');
 const Renderer = require('./renderer');
 const electronWindow = remote.getCurrentWindow();
+const path = require('path');
 
 const keys = [];
 window.addEventListener('keydown', ({ keyCode }) => {
@@ -20,6 +21,8 @@ window.addEventListener('keydown', ({ keyCode }) => {
             remote.getCurrentWebContents().openDevTools();
             break;
         default: // all others
+            const index = keys.indexOf(keyCode);
+            if (index > -1) return;
             keys.push(keyCode);
             break;
     }
@@ -34,24 +37,34 @@ window.addEventListener('keyup', ({ keyCode }) => {
 const renderer = new Renderer(document.body);
 let state = getStartingState();
 
+// load any images - we could loop through the img folder if we needed to
+renderer.loadSprite('frog', './img/frog.png');
+
 let last = (new Date()).getTime();
 const update = () => {
     const time = (new Date()).getTime();
     const dt = time - last;
 
-    // Update the current game state - it should return the new state type and args if we need to change
-    const next = state.update(dt, keys);
-    if (next) {
-        state = getNextState(next);
+    try {
+        // Update the current game state - it should return the new state type and args if we need to change
+        const next = state.update(dt, keys);
+        if (next) {
+            state = getNextState(next);
+        }
+    } catch (ex) {
+        console.error('Error while updating', ex);
     }
-
     last = time;
     setTimeout(update, 16);
 };
 
 const draw = () => {
     renderer.reset();
-    state.draw(renderer);
+    try {
+        state.draw(renderer);
+    } catch (ex) {
+        console.error('Error while drawing', ex);
+    }
     window.requestAnimationFrame(draw);
 };
 

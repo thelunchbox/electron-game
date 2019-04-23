@@ -30,40 +30,40 @@ class Renderer {
         this.canvas = canvas;
         this.context = canvas.getContext('2d');
 
-        this.clearRect = this.context.clearRect;
-        this.clip = this.context.clip;
-        this.createImageData = this.context.createImageData;
-        this.createLinearGradient = this.context.createLinearGradient;
-        this.createPattern = this.context.createPattern;
-        this.createRadialGradient = this.context.createRadialGradient;
-        this.drawFocusIfNeeded = this.context.drawFocusIfNeeded;
-        this.drawImage = this.context.drawImage;
-        this.ellipse = this.context.ellipse;
-        this.fill = this.context.fill;
-        this.fillRect = this.context.fillRect;
-        this.fillText = this.context.fillText;
-        this.getImageData = this.context.getImageData;
-        this.getLineDash = this.context.getLineDash;
-        this.getTransform = this.context.getTransform;
-        this.isPointInPath = this.context.isPointInPath;
-        this.isPointInStroke = this.context.isPointInStroke;
-        this.lineTo = this.context.lineTo;
-        this.measureText = this.context.measureText;
-        this.moveTo = this.context.moveTo;
-        this.putImageData = this.context.putImageData;
-        this.quadraticCurveTo = this.context.quadraticCurveTo;
-        this.rect = this.context.rect;
-        this.resetTransform = this.context.resetTransform;
-        this.rotate = this.context.rotate;
-        this.scale = this.context.scale;
-        this.scrollPathIntoView = this.context.scrollPathIntoView;
-        this.setLineDash = this.context.setLineDash;
-        this.setTransform = this.context.setTransform;
-        this.stroke = this.context.stroke;
-        this.strokeRect = this.context.strokeRect;
-        this.strokeText = this.context.strokeText;
-        this.transform = this.context.transform;
-        this.translate = this.context.translate;
+        this.clearRect = (...args) => this.context.clearRect(...args);
+        this.clip = (...args) => this.context.clip(...args);
+        this.createImageData = (...args) => this.context.createImageData(...args);
+        this.createLinearGradient = (...args) => this.context.createLinearGradient(...args);
+        this.createPattern = (...args) => this.context.createPattern(...args);
+        this.createRadialGradient = (...args) => this.context.createRadialGradient(...args);
+        this.drawFocusIfNeeded = (...args) => this.context.drawFocusIfNeeded(...args);
+        this.drawImage = (...args) => this.context.drawImage(...args);
+        this.ellipse = (...args) => this.context.ellipse(...args);
+        this.fill = (...args) => this.context.fill(...args);
+        this.fillRect = (...args) => this.context.fillRect(...args);
+        this.fillText = (...args) => this.context.fillText(...args);
+        this.getImageData = (...args) => this.context.getImageData(...args);
+        this.getLineDash = (...args) => this.context.getLineDash(...args);
+        this.getTransform = (...args) => this.context.getTransform(...args);
+        this.isPointInPath = (...args) => this.context.isPointInPath(...args);
+        this.isPointInStroke = (...args) => this.context.isPointInStroke(...args);
+        this.lineTo = (...args) => this.context.lineTo(...args);
+        this.measureText = (...args) => this.context.measureText(...args);
+        this.moveTo = (...args) => this.context.moveTo(...args);
+        this.putImageData = (...args) => this.context.putImageData(...args);
+        this.quadraticCurveTo = (...args) => this.context.quadraticCurveTo(...args);
+        this.rect = (...args) => this.context.rect(...args);
+        this.resetTransform = (...args) => this.context.resetTransform(...args);
+        this.rotate = (...args) => this.context.rotate(...args);
+        this.scale = (...args) => this.context.scale(...args);
+        this.scrollPathIntoView = (...args) => this.context.scrollPathIntoView(...args);
+        this.setLineDash = (...args) => this.context.setLineDash(...args);
+        this.setTransform = (...args) => this.context.setTransform(...args);
+        this.stroke = (...args) => this.context.stroke(...args);
+        this.strokeRect = (...args) => this.context.strokeRect(...args);
+        this.strokeText = (...args) => this.context.strokeText(...args);
+        this.transform = (...args) => this.context.transform(...args);
+        this.translate = (...args) => this.context.translate(...args);
 
         Object.defineProperty(this, 'fillStyle', { get: () => this.context.fillStyle, set: (value) => this.context.fillStyle = value });
         Object.defineProperty(this, 'filter', { get: () => this.context.filter, set: (value) => this.context.filter = value });
@@ -120,12 +120,12 @@ class Renderer {
         }
     }
 
-    drawSprite(name, x, y, w, h, dx, dy, dw, dh) {
+    drawSprite(name, ...args) {
         if (!IMAGE_CACHE[name]) {
             console.warn(`Could not draw sprite ${name} because it has not been loaded. If you have started the loading process, it may not be complete`);
             return;
         }
-        this.drawImage(IMAGE_CACHE[name], x, y, w, h, dx, dy, dw, dh);
+        this.context.drawImage(IMAGE_CACHE[name], ...args);
     }
 
     applySettings(settings) {
