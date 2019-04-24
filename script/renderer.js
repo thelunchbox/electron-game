@@ -9,14 +9,14 @@ class Renderer {
 
         const resizeCanvas = function () {
             const normalRatio = canvas.width / canvas.height;
-            const newRatio = window.innerWidth / window.innerHeight;
+            const newRatio = root.offsetWidth / root.offsetHeight;
             let scale = 1;
             if (newRatio < normalRatio) {
                 // tall and skinny
-                scale = window.innerWidth / canvas.width;
+                scale = root.offsetWidth / canvas.width;
             } else if (newRatio >= normalRatio) {
                 // short and fat
-                scale = window.innerHeight / canvas.height;
+                scale = root.offsetHeight / canvas.height;
             }
             canvas.style.transform = 'translate(-50%, -50%) scale(' + scale + ', ' + scale + ')';
         }
@@ -121,6 +121,10 @@ class Renderer {
         i.onload = () => {
             IMAGE_CACHE[name] = i;
         }
+    }
+
+    clearSprites() {
+        IMAGE_CACHE = {};
     }
 
     drawSprite(name, ...args) {
