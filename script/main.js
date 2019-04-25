@@ -4,7 +4,7 @@ const Renderer = require('./renderer');
 const electronWindow = remote.getCurrentWindow();
 const path = require('path');
 
-const keys = [];
+let keys = [];
 window.addEventListener('keydown', ({ keyCode }) => {
     switch (keyCode) {
         case 27:
@@ -49,6 +49,7 @@ const update = () => {
         // Update the current game state - it should return the new state type and args if we need to change
         const next = state.update(dt, keys);
         if (next) {
+            keys = [];
             state = getNextState(next);
         }
     } catch (ex) {

@@ -3,6 +3,8 @@ const { STATES } = require('../stateFactory');
 
 const SPEED = 10;
 const RIBBIT_REST = 60 * 5; // 60 fps * number of seconds
+const RIBBIT_FADE = 300;
+const MAX_TONGUE = 200;
 
 class Game extends State {
 
@@ -13,9 +15,12 @@ class Game extends State {
             x: 800,
             y: 800,
             dir: 1,
-            tongueLength: 0,
+            tongue: {
+                length: 0,
+                active: null,
+            },
             ribbit: {
-                cooldown: 100,
+                cooldown: 0,
                 x: null,
                 y: null,
             }
@@ -33,57 +38,96 @@ class Game extends State {
             }
         }
 
-        if (keys.includes(38)) {
-            this.player.y -= SPEED;
-        } else if (keys.includes(40)) {
-            this.player.y += SPEED;
-        }
+        if (this.player.tongue.active) {
+            if (this.player.tongue.active == 'extend') {
+                this.player.tongue.length = Math.min(MAX_TONGUE, this.player.tongue.length + 20);
+                if (this.player.tongue.length == MAX_TONGUE) {
+                    this.player.tongue.active = 'retract';
+                }
+            } else if (this.player.tongue.active == 'retract') {
+                this.player.tongue.length = Math.max(0, this.player.tongue.length - 20);
+                if (this.player.tongue.length == 0) {
+                    this.player.tongue.active = null;
+                }
+            }
 
-        if (keys.includes(37)) {
-            this.player.x -= SPEED;
-            this.player.dir = -1;
-        } else if (keys.includes(39)) {
-            this.player.x += SPEED;
-            this.player.dir = 1;
-        }
+        } else {
+            if (keys.includes(38)) {
+                this.player.y -= SPEED;
+            } else if (keys.includes(40)) {
+                this.player.y += SPEED;
+            }
 
-        if (keys.includes(32) && !this.player.ribbit.cooldown) {
-            this.player.ribbit = {
-                cooldown: RIBBIT_REST,
-                x: this.player.x,
-                y: this.player.y,
-            };            
+            if (keys.includes(37)) {
+                this.player.x -= SPEED;
+                this.player.dir = -1;
+            } else if (keys.includes(39)) {
+                this.player.x += SPEED;
+                this.player.dir = 1;
+            }
+
+            if (keys.includes(70)) {
+                this.player.tongue.active = 'extend';
+            }
+
+            if (keys.includes(32) && !this.player.ribbit.cooldown) {
+                this.player.ribbit = {
+                    cooldown: RIBBIT_REST,
+                    x: this.player.x,
+                    y: this.player.y,
+                };
+            }
         }
     }
 
     draw(renderer) {
-        const { x, y, dir, ribbit } = this.player;
+        const { x, y, dir, ribbit, tongue } = this.player;
         // draw last ribbit
         if (ribbit.x && ribbit.y) {
             renderer.isolatePath(() => {
                 renderer.arc(ribbit.x, ribbit.y, 2 * (RIBBIT_REST - ribbit.cooldown), 0, Math.PI * 2);
                 renderer.fill();
             }, {
-                fillStyle: '#0f0',
-                // globalAlpha: 1 / Math.pow(RIBBIT_REST - ribbit.cooldown, 2),
-                globalAlpha: ribbit.cooldown / RIBBIT_REST,
-            })
+                    fillStyle: '#0f0',
+                    // globalAlpha: 1 / Math.pow(RIBBIT_REST - ribbit.cooldown, 2),
+                    globalAlpha: ribbit.cooldown / RIBBIT_REST,
+                })
         }
-        
+
         // draw player
         renderer.isolatePath(() => {
             renderer.translate(x, y);
             renderer.isolatePath(() => {
                 renderer.fillText('RIBBIT!', 0, -50);
             }, {
-                font: '20pt Arial',
-                fillStyle: '#f00',
-                globalAlpha: this.player.ribbit.cooldown / RIBBIT_REST,
-                textAlign: 'center',
-                textBaseline: 'bottom',
-            });
+                    font: '20pt Arial',
+                    fillStyle: '#f00',
+                    globalAlpha: this.player.ribbit.cooldown / RIBBIT_REST,
+                    textAlign: 'center',
+                    textBaseline: 'bottom',
+                });
             renderer.scale(dir, 1);
             renderer.drawSprite('frog', -40, -40, 80, 80);
+            if (tongue.active) {
+                renderer.isolatePath(() => {
+                    renderer.translate(33, -23);
+                    const tongueX = tongue.length * Math.cos(-Math.PI / 4);
+                    const tongueY = tongue.length * Math.sin(-Math.PI / 4);
+                    renderer.moveTo(0, 0);
+                    renderer.lineTo(tongueX, tongueY);
+                    renderer.stroke();
+                    renderer.path(() => {
+                        renderer.arc(tongueX, tongueY, 6, 0, Math.PI * 2);
+                        renderer.fill();
+                    }, {
+                            fillStyle: '#ff0055',
+                        });
+                }, {
+                        lineCap: 'round',
+                        lineWidth: 4,
+                        strokeStyle: '#ff0055',
+                    });
+            }
         });
     }
 }
