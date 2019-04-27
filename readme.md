@@ -52,8 +52,26 @@ Aside from ~all~ *most* of the standard functions of canvas, the renderer offers
 * fillCircle(x, y, radius) - creates a filled in circle.
 * strokeCircle(x, y, radius) - creates a hollow circle.
 * strokeAndFillCircle(x, y, radius) - creates an outlined circle.
-* strokeAndFillRect(x, y, width, height) - creates and outlined rectangle.
+* strokeAndFillRect(x, y, width, height) - creates an outlined rectangle.
 
+##### Path Drawing
+The following functions take in an array of points in the format `{x, y}` and an optional `options` object.
+
+Currently there is only one option - `close`: set to `true` if you want the close the path by drawing back to the first point.
+* fillPath(points, options) - creates a filled path (close defaults to `true`)
+* strokePath(points, options) - creates a hollow path (close defaults to `false`)
+* strokeAndFillPath(points, options) - creates an outlined path (close defaults to `true`)
+* animatePath(points, frame, options) - animates a path by drawing the points by referencing the frame number. For this function, there are three options:
+    * `repeat` - if set to true, this will repeat the entire animation from start once it completes
+    * `wrap` - overrides `repeat` if set to true, and loops the animation with the specified length
+    * `length` - defaults to the length of the array - this is the maximum number of frames to animate
+
+##### Special Animations
+* oscillateText(text, x, y, frame, options) - creates text that oscillates per character. The text will have an effect of looking like a flag waving. This will use the current textAlign and textBaseline settings. For this function, there are four options:
+    * `amplitude` - the height amount the text will rise above and below the supplied y axis.
+    * `period` - the speed with which the characters oscillate (smaller fractions go slower).
+    * `shift` - the amount by which to shift the start of the animation.
+    * `drag` - the amount by which each subsequent character will drag behing its previous character.
 
 #### Removed Properties and Functions
 The following functions are *not* passed through to the renderer - to access them, you can use them directly through `renderer.context`:
