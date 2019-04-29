@@ -4,7 +4,6 @@ const { STATES } = require('../stateFactory');
 const SPEED = 10;
 const RIBBIT_REST = 60 * 5; // 60 fps * number of seconds
 const RIBBIT_FADE = 300;
-const MAX_TONGUE = 200;
 
 class Game extends State {
 
@@ -18,6 +17,7 @@ class Game extends State {
             tongue: {
                 length: 0,
                 active: null,
+                frame: 0,
             },
             ribbit: {
                 cooldown: 0,
@@ -39,13 +39,15 @@ class Game extends State {
         }
 
         if (this.player.tongue.active) {
+            const tFrame = this.frame - this.player.tongue.frame;
+            const tDiff = ((tFrame - 15) ** 2) / 5;
             if (this.player.tongue.active == 'extend') {
-                this.player.tongue.length = Math.min(MAX_TONGUE, this.player.tongue.length + 20);
-                if (this.player.tongue.length == MAX_TONGUE) {
+                this.player.tongue.length = this.player.tongue.length + tDiff;
+                if (tFrame == 15) {
                     this.player.tongue.active = 'retract';
                 }
             } else if (this.player.tongue.active == 'retract') {
-                this.player.tongue.length = Math.max(0, this.player.tongue.length - 20);
+                this.player.tongue.length = Math.max(0, this.player.tongue.length - tDiff);
                 if (this.player.tongue.length == 0) {
                     this.player.tongue.active = null;
                 }
@@ -68,6 +70,7 @@ class Game extends State {
 
             if (keys.includes(70)) {
                 this.player.tongue.active = 'extend';
+                this.player.tongue.frame = this.frame;
             }
 
             if (keys.includes(32) && !this.player.ribbit.cooldown) {
@@ -78,6 +81,7 @@ class Game extends State {
                 };
             }
         }
+    super.update();
     }
 
     draw(renderer) {
