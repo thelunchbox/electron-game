@@ -1,22 +1,23 @@
 const IMAGE_CACHE = {};
 
 class Renderer {
-    constructor(root) {
+    constructor(root, options = {}) {
+        const { width = 1600, height = 900 } = options;
         const canvas = document.createElement('canvas');
-        canvas.width = 1600;
-        canvas.height = 900;
+        canvas.width = width;
+        canvas.height = height;
         root.appendChild(canvas);
 
         const resizeCanvas = function () {
             const normalRatio = canvas.width / canvas.height;
-            const newRatio = window.innerWidth / window.innerHeight;
+            const newRatio = root.offsetWidth / root.offsetHeight;
             let scale = 1;
             if (newRatio < normalRatio) {
                 // tall and skinny
-                scale = window.innerWidth / canvas.width;
+                scale = root.offsetWidth / canvas.width;
             } else if (newRatio >= normalRatio) {
                 // short and fat
-                scale = window.innerHeight / canvas.height;
+                scale = root.offsetHeight / canvas.height;
             }
             canvas.style.transform = 'translate(-50%, -50%) scale(' + scale + ', ' + scale + ')';
         }
@@ -109,9 +110,80 @@ class Renderer {
     }
 
     oscillateText(text, x, y, frame, options = {}) {
-        // use measureText to find out how big each letter is
-        // figure out if we're left|center|right justified
-        // figure out if we're top|middle|bottom baseline
+        const {
+            amplitude = 20,
+            period = 1/10,
+            shift = 0,
+            drag = 2,
+        } = options;
+        const size = this.context.measureText(text);
+        let x0 = x;
+        switch(this.textAlign) {
+            case 'center':
+                x0 = x - size.width / 2;
+                break;
+            case 'right':
+                x0 = x - size.width;
+                break;
+            case 'left':
+            default:
+            break;
+        }
+        this.context.save();
+        this.context.textAlign = 'left';
+        let rendered = '';
+        text.split('').forEach((c, i) => {
+            const renderedSize = this.context.measureText(rendered);
+            const f = frame - drag*i;
+            this.strokeAndFillText(c, x0 + renderedSize.width, y + (amplitude * Math.sin((f * period) + shift)));
+            rendered += c;
+        });
+        this.context.restore();
+    }
+
+    drawPath(points, close) {
+        const [first, ...others] = points;
+        this.context.moveTo(first.x, first.y);
+        if (close) others.push(first);
+        others.forEach(point => {
+            if (point.settings) {
+                this.context.save();
+                this.applySettings(settings);
+            }
+            this.context.lineTo(point.x, point.y);
+            if (point.settings) this.context.restore();
+        });
+    }
+
+    animatePath(points, frame, options) {
+        const { wrap = false, length = points.length , repeat = false } = options;
+        const start = Math.round(wrap ? frame % points.length : 0);
+        const end = Math.round(wrap ? start + length : repeat ? frame % (length + 1): Math.min(length, frame));
+        if (start == end) return;
+
+        const src = wrap ? [...points, ...points] : [...points];
+        const usePoints = src.slice(start, end);
+        this.drawPath(usePoints, false);
+        this.context.stroke();
+    }
+
+    fillPath(points, options) {
+        const { close = true } = options;
+        this.drawPath(points, close);
+        this.context.fill();
+    }
+
+    strokePath(points, options) {
+        const { close = false } = options;
+        this.drawPath(points, close);
+        this.context.stroke();
+    }
+
+    strokeAndFillPath(points, options) {
+        const { close = true } = options;
+        this.drawPath(points, close);
+        this.context.stroke();
+        this.context.fill();
     }
 
     loadSprite(name, filepath) {
@@ -121,6 +193,10 @@ class Renderer {
         i.onload = () => {
             IMAGE_CACHE[name] = i;
         }
+    }
+
+    clearSprites() {
+        IMAGE_CACHE = {};
     }
 
     drawSprite(name, ...args) {
