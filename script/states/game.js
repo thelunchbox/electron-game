@@ -4,7 +4,7 @@ const { STATES } = require('../stateFactory');
 const SPEED = 10;
 const RIBBIT_REST = 60 * 5; // 60 fps * number of seconds
 const RIBBIT_FADE = 300;
-const MAX_FLIES = 1;
+const MAX_FLIES = 10;
 const GAME_WIDTH = 1600;
 const GAME_HEIGHT = 900;
 const FLY_SPEED = 5;
@@ -48,11 +48,16 @@ class Game extends State {
                     x: Math.random() * GAME_WIDTH,
                     y: Math.random() * GAME_HEIGHT,
                 },
+                trapped: false,
             });
         }
 
         this.flies.forEach(fly => {
-            if (fly.target) {
+            if (fly.trapped) {
+                const { x, y, tongue } = this.player;
+                fly.x = x + (tongue.length * Math.cos(-Math.PI / 4));
+                fly.y = y + (tongue.length * Math.sin(-Math.PI / 4));
+            } else if (fly.target) {
                 const diffX = Math.abs(fly.x - fly.target.x);
                 const diffY = Math.abs(fly.y - fly.target.y);
                 if (diffX <= FLY_SPEED && diffY <= FLY_SPEED) {
@@ -88,8 +93,14 @@ class Game extends State {
                 this.player.tongue.length = Math.max(0, this.player.tongue.length - tDiff);
                 if (this.player.tongue.length == 0) {
                     this.player.tongue.active = null;
+                    this.flies.filter(fly => fly.trapped).forEach(fly => {
+                        const index = this.flies.indexOf(fly);
+                        this.flies.splice(index, 1);
+                        this.player.score += 0.5;
+                    });
                 }
             }
+
             this.flies.forEach(fly => {
                 const { tongue } = this.player;
                 const tongueX = this.player.x + (tongue.length * Math.cos(-Math.PI / 4));
@@ -99,9 +110,7 @@ class Game extends State {
                 // did we eat a fly?
                 if (diffX <= TONGUE_TIP_SIZE + FLY_SIZE + 2 * FLY_SPEED && diffY <= TONGUE_TIP_SIZE + FLY_SIZE + 2 * FLY_SPEED) {
                     // yup
-                    const index = this.flies.indexOf(fly);
-                    this.flies.splice(index, 1);
-                    this.player.score += 0.5;
+                    fly.trapped = true;
                 }
             })
 
@@ -206,7 +215,7 @@ class Game extends State {
             }, {
                 lineWidth: 4,
                 strokeStyle: '#fff',
-                fillStyle: '#000',
+                fillStyle: fly.trapped ? '#f00' : '#000',
             });
             renderer.isolatePath(() => {
                renderer.fillText(`Score: ${this.player.score}`, 3, 3); 
@@ -216,12 +225,6 @@ class Game extends State {
                 fillStyle: '#fff',
                 font: '32pt Sans',
             });
-            // renderer.path(() => {
-            //     renderer.strokeCircle(fly.x, fly.y, FLY_SIZE + 2 * FLY_SPEED);
-            // }, {
-            //     lineWidth: 2,
-            //     strokeStyle: '#ff0',
-            // });
         });
     }
 }
