@@ -54,9 +54,9 @@ class Game extends State {
 
         this.flies.forEach(fly => {
             if (fly.trapped) {
-                const { x, y, tongue } = this.player;
-                fly.x = x + (tongue.length * Math.cos(-Math.PI / 4));
-                fly.y = y + (tongue.length * Math.sin(-Math.PI / 4));
+                const { x, y, dir, tongue } = this.player;
+                fly.x = x + dir * (tongue.length * Math.cos(-Math.PI / 4)) + dir * 33;
+                fly.y = y + (tongue.length * Math.sin(-Math.PI / 4)) - 23;
             } else if (fly.target) {
                 const diffX = Math.abs(fly.x - fly.target.x);
                 const diffY = Math.abs(fly.y - fly.target.y);
@@ -102,8 +102,8 @@ class Game extends State {
             }
 
             this.flies.forEach(fly => {
-                const { tongue } = this.player;
-                const tongueX = this.player.x + (tongue.length * Math.cos(-Math.PI / 4));
+                const { dir, tongue } = this.player;
+                const tongueX = this.player.x + dir * (tongue.length * Math.cos(-Math.PI / 4));
                 const tongueY = this.player.y + (tongue.length * Math.sin(-Math.PI / 4));
                 const diffX = Math.abs(fly.x - tongueX);
                 const diffY = Math.abs(fly.y - tongueY);
