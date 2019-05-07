@@ -4,13 +4,22 @@ const { STATES } = require('../stateFactory');
 const SPEED = 10;
 const RIBBIT_REST = 60 * 5; // 60 fps * number of seconds
 const RIBBIT_FADE = 300;
+const MAX_FLIES = 1;
+const GAME_WIDTH = 1600;
+const GAME_HEIGHT = 900;
+const FLY_SPEED = 5;
+const FLY_SIZE = 12;
+const TONGUE_TIP_SIZE = 6;
 
 class Game extends State {
 
     constructor(args) {
         super(args);
 
+        this.flies = [];
+
         this.player = {
+            score: 0,
             x: 800,
             y: 800,
             dir: 1,
@@ -30,6 +39,35 @@ class Game extends State {
     // NEXT: Give the frog a tongue that sticks out!
 
     update(dt, keys) {
+
+        if (this.flies.length < MAX_FLIES) {
+            this.flies.push({
+                x: Math.random() * GAME_WIDTH,
+                y: Math.random() * GAME_HEIGHT,
+                target: {
+                    x: Math.random() * GAME_WIDTH,
+                    y: Math.random() * GAME_HEIGHT,
+                },
+            });
+        }
+
+        this.flies.forEach(fly => {
+            if (fly.target) {
+                const diffX = Math.abs(fly.x - fly.target.x);
+                const diffY = Math.abs(fly.y - fly.target.y);
+                if (diffX <= FLY_SPEED && diffY <= FLY_SPEED) {
+                    fly.target = {
+                        x: Math.random() * GAME_WIDTH,
+                        y: Math.random() * GAME_HEIGHT,
+                    };
+                }
+
+                const angle = Math.atan2(fly.target.y - fly.y, fly.target.x - fly.x);
+                fly.x += FLY_SPEED*Math.cos(angle);
+                fly.y += FLY_SPEED*Math.sin(angle);
+            }
+        });
+
         if (this.player.ribbit.cooldown > 0) {
             this.player.ribbit.cooldown -= 1;
             if (this.player.ribbit.cooldown == 0) {
@@ -52,6 +90,20 @@ class Game extends State {
                     this.player.tongue.active = null;
                 }
             }
+            this.flies.forEach(fly => {
+                const { tongue } = this.player;
+                const tongueX = this.player.x + (tongue.length * Math.cos(-Math.PI / 4));
+                const tongueY = this.player.y + (tongue.length * Math.sin(-Math.PI / 4));
+                const diffX = Math.abs(fly.x - tongueX);
+                const diffY = Math.abs(fly.y - tongueY);
+                // did we eat a fly?
+                if (diffX <= TONGUE_TIP_SIZE + FLY_SIZE + 2 * FLY_SPEED && diffY <= TONGUE_TIP_SIZE + FLY_SIZE + 2 * FLY_SPEED) {
+                    // yup
+                    const index = this.flies.indexOf(fly);
+                    this.flies.splice(index, 1);
+                    this.player.score += 0.5;
+                }
+            })
 
         } else {
             if (keys.includes(38)) {
@@ -112,6 +164,7 @@ class Game extends State {
                 });
             renderer.scale(dir, 1);
             renderer.drawSprite('frog', -40, -40, 80, 80);
+            // draw tongue
             if (tongue.active) {
                 renderer.isolatePath(() => {
                     renderer.translate(33, -23);
@@ -121,7 +174,7 @@ class Game extends State {
                     renderer.lineTo(tongueX, tongueY);
                     renderer.stroke();
                     renderer.path(() => {
-                        renderer.arc(tongueX, tongueY, 6, 0, Math.PI * 2);
+                        renderer.arc(tongueX, tongueY, TONGUE_TIP_SIZE, 0, Math.PI * 2);
                         renderer.fill();
                     }, {
                             fillStyle: '#ff0055',
@@ -132,6 +185,43 @@ class Game extends State {
                         strokeStyle: '#ff0055',
                     });
             }
+        });
+
+        // draw flies
+        this.flies.forEach(fly => {
+            renderer.isolatePath(() => {
+                renderer.strokeAndFillCircle(fly.x, fly.y, FLY_SIZE);
+                renderer.path(() => {
+                    renderer.oscillateText('buzz', fly.x + FLY_SIZE, fly.y, this.frame * 2, { amplitude: 10, outline: false });
+                }, {
+                    fillStyle: '#fff',
+                    textAlign: 'left',
+                });
+                renderer.path(() => {
+                    renderer.oscillateText('buzz', fly.x - FLY_SIZE, fly.y, this.frame * 2, { amplitude: 10, reverse: true, outline: false });
+                }, {
+                    fillStyle: '#fff',
+                    textAlign: 'right',
+                });
+            }, {
+                lineWidth: 4,
+                strokeStyle: '#fff',
+                fillStyle: '#000',
+            });
+            renderer.isolatePath(() => {
+               renderer.fillText(`Score: ${this.player.score}`, 3, 3); 
+            }, {
+                textAlign: 'left',
+                textBaseline: 'top',
+                fillStyle: '#fff',
+                font: '32pt Sans',
+            });
+            // renderer.path(() => {
+            //     renderer.strokeCircle(fly.x, fly.y, FLY_SIZE + 2 * FLY_SPEED);
+            // }, {
+            //     lineWidth: 2,
+            //     strokeStyle: '#ff0',
+            // });
         });
     }
 }
