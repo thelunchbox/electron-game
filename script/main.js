@@ -35,7 +35,7 @@ window.addEventListener('keyup', ({ keyCode }) => {
 });
 
 const renderer = new Renderer(document.body);
-let state = getStartingState();
+let state = getStartingState(renderer);
 
 // load any images - we could loop through the img folder if we needed to
 renderer.loadSprite('frog', './img/frog.png');
@@ -62,7 +62,7 @@ const update = () => {
 const draw = () => {
     renderer.reset();
     try {
-        state.draw(renderer);
+        state.draw();
     } catch (ex) {
         console.error('Error while drawing', ex);
     }

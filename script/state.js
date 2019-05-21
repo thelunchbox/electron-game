@@ -1,8 +1,9 @@
 class State {
     constructor(args) {
         this.args = args;
-        this.next = null;
         this.frame = 0;
+        this.next = null;
+        this.renderer = args.renderer;
     }
 
     update(dt, keys) {
@@ -14,7 +15,10 @@ class State {
         if (this.next) {
             return {
                 next: this.next,
-                args: this.nextArgs,
+                args: {
+                    ...this.nextArgs,
+                    renderer: this.renderer,
+                },
             }
         }
     }

@@ -2,7 +2,7 @@ const STATES = require('./states');
 const Title = require('./states/title');
 const Game = require('./states/game');
 
-const getStartingState = () => new Title({});
+const getStartingState = (renderer) => new Title({ renderer });
 
 const getNextState = ({ next, args }) => {
     switch (next) {

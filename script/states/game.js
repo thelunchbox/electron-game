@@ -5,11 +5,14 @@ const SPEED = 10;
 const RIBBIT_REST = 60 * 5; // 60 fps * number of seconds
 const RIBBIT_FADE = 300;
 const MAX_FLIES = 10;
+const MAX_BEES = 2;
+const MAX_INJURY = 120;
 const GAME_WIDTH = 1600;
 const GAME_HEIGHT = 900;
-const FLY_SPEED = 5;
-const FLY_SIZE = 12;
+const INSECT_SPEED = 5;
+const INSECT_SIZE = 12;
 const TONGUE_TIP_SIZE = 6;
+const FROG_SIZE = 80;
 
 class Game extends State {
 
@@ -17,6 +20,7 @@ class Game extends State {
         super(args);
 
         this.flies = [];
+        this.bees = [];
 
         this.player = {
             score: 0,
@@ -36,12 +40,9 @@ class Game extends State {
         };
     }
 
-    // NEXT: Give the frog a tongue that sticks out!
-
-    update(dt, keys) {
-
-        if (this.flies.length < MAX_FLIES) {
-            this.flies.push({
+    addInsects(list, max) {
+        if (list.length < max) {
+            list.push({
                 x: Math.random() * GAME_WIDTH,
                 y: Math.random() * GAME_HEIGHT,
                 target: {
@@ -51,27 +52,44 @@ class Game extends State {
                 trapped: false,
             });
         }
+    }
 
-        this.flies.forEach(fly => {
-            if (fly.trapped) {
-                const { x, y, dir, tongue } = this.player;
-                fly.x = x + dir * (tongue.length * Math.cos(-Math.PI / 4)) + dir * 33;
-                fly.y = y + (tongue.length * Math.sin(-Math.PI / 4)) - 23;
-            } else if (fly.target) {
-                const diffX = Math.abs(fly.x - fly.target.x);
-                const diffY = Math.abs(fly.y - fly.target.y);
-                if (diffX <= FLY_SPEED && diffY <= FLY_SPEED) {
-                    fly.target = {
-                        x: Math.random() * GAME_WIDTH,
-                        y: Math.random() * GAME_HEIGHT,
-                    };
-                }
-
-                const angle = Math.atan2(fly.target.y - fly.y, fly.target.x - fly.x);
-                fly.x += FLY_SPEED*Math.cos(angle);
-                fly.y += FLY_SPEED*Math.sin(angle);
+    updateInsect(insect) {
+        const { x, y, dir, tongue } = this.player;
+        if (tongue.active) {
+            const tongueX = this.player.x + dir * (tongue.length * Math.cos(-Math.PI / 4));
+            const tongueY = this.player.y + (tongue.length * Math.sin(-Math.PI / 4));
+            const diffX = Math.abs(insect.x - tongueX);
+            const diffY = Math.abs(insect.y - tongueY);
+            // did we eat an insect?
+            if (diffX <= TONGUE_TIP_SIZE + INSECT_SIZE + 2 * INSECT_SPEED && diffY <= TONGUE_TIP_SIZE + INSECT_SIZE + 2 * INSECT_SPEED) {
+                // yup
+                insect.trapped = true;
             }
-        });
+        }
+        if (insect.trapped) {
+            insect.x = x + dir * (tongue.length * Math.cos(-Math.PI / 4)) + dir * 33;
+            insect.y = y + (tongue.length * Math.sin(-Math.PI / 4)) - 23;
+        } else if (insect.target) {
+            const diffX = Math.abs(insect.x - insect.target.x);
+            const diffY = Math.abs(insect.y - insect.target.y);
+            if (diffX <= INSECT_SPEED && diffY <= INSECT_SPEED) {
+                insect.target = {
+                    x: Math.random() * GAME_WIDTH,
+                    y: Math.random() * GAME_HEIGHT,
+                };
+            }
+
+            const angle = Math.atan2(insect.target.y - insect.y, insect.target.x - insect.x);
+            insect.x += INSECT_SPEED * Math.cos(angle);
+            insect.y += INSECT_SPEED * Math.sin(angle);
+        }
+    }
+
+    update(dt, keys) {
+
+        this.addInsects(this.flies, MAX_FLIES);
+        this.addInsects(this.bees, MAX_BEES);
 
         if (this.player.ribbit.cooldown > 0) {
             this.player.ribbit.cooldown -= 1;
@@ -79,6 +97,11 @@ class Game extends State {
                 this.player.ribbit.x = null;
                 this.player.ribbit.y = null;
             }
+        }
+
+        if (this.player.injury) {
+            // console.log(1 - (this.player.injury || 0) / (2 * MAX_INJURY));
+            this.player.injury--;
         }
 
         if (this.player.tongue.active) {
@@ -98,22 +121,14 @@ class Game extends State {
                         this.flies.splice(index, 1);
                         this.player.score += 0.5;
                     });
+                    this.bees.filter(bee => bee.trapped).forEach(bee => {
+                        const index = this.bees.indexOf(bee);
+                        this.bees.splice(index, 1);
+                        this.player.score -= 5;
+                        this.player.injury = MAX_INJURY;
+                    });
                 }
             }
-
-            this.flies.forEach(fly => {
-                const { dir, tongue } = this.player;
-                const tongueX = this.player.x + dir * (tongue.length * Math.cos(-Math.PI / 4));
-                const tongueY = this.player.y + (tongue.length * Math.sin(-Math.PI / 4));
-                const diffX = Math.abs(fly.x - tongueX);
-                const diffY = Math.abs(fly.y - tongueY);
-                // did we eat a fly?
-                if (diffX <= TONGUE_TIP_SIZE + FLY_SIZE + 2 * FLY_SPEED && diffY <= TONGUE_TIP_SIZE + FLY_SIZE + 2 * FLY_SPEED) {
-                    // yup
-                    fly.trapped = true;
-                }
-            })
-
         } else {
             if (keys.includes(38)) {
                 this.player.y -= SPEED;
@@ -129,7 +144,10 @@ class Game extends State {
                 this.player.dir = 1;
             }
 
-            if (keys.includes(70)) {
+            this.player.x = Math.min(GAME_WIDTH - FROG_SIZE / 2, Math.max(FROG_SIZE / 2, this.player.x));
+            this.player.y = Math.min(GAME_HEIGHT - FROG_SIZE / 2, Math.max(FROG_SIZE / 2, this.player.y));
+
+            if (keys.includes(70) && !this.player.injury) {
                 this.player.tongue.active = 'extend';
                 this.player.tongue.frame = this.frame;
             }
@@ -142,16 +160,60 @@ class Game extends State {
                 };
             }
         }
-    super.update();
+        this.flies.forEach(fly => this.updateInsect(fly));
+        this.bees.forEach(bee => this.updateInsect(bee));
+        super.update();
     }
 
-    draw(renderer) {
+    drawInsect(insect, type) {
+        this.renderer.isolatePath(() => {
+            this.renderer.translate(insect.x, insect.y);
+            this.renderer.strokeAndFillCircle(0, 0, INSECT_SIZE);
+            this.renderer.path(() => {
+                this.renderer.oscillateText('buzz', INSECT_SIZE, 0, this.frame * 2, { amplitude: 10, outline: false });
+            }, {
+                    fillStyle: '#fff',
+                    textAlign: 'left',
+                });
+            this.renderer.path(() => {
+                this.renderer.oscillateText('buzz', -INSECT_SIZE, 0, this.frame * 2, { amplitude: 10, reverse: true, outline: false });
+            }, {
+                    fillStyle: '#fff',
+                    textAlign: 'right',
+                });
+            if (type === 'BEE') {
+                this.renderer.isolatePath(() => {
+                    this.renderer.rotate(Math.PI / 2);
+                    this.renderer.fillText('ouch', INSECT_SIZE, 0);
+                }, {
+                        font: '8pt Sans',
+                        fillStyle: '#F5AF22',
+                        textAlign: 'left',
+                        textBaseline: 'middle',
+                    });
+            }
+        }, {
+                lineWidth: 4,
+                strokeStyle: '#fff',
+                fillStyle: insect.trapped ? '#f00' : type === 'BEE' ? '#ff0' : '#000',
+            });
+        this.renderer.isolatePath(() => {
+            this.renderer.fillText(`Score: ${this.player.score}`, 3, 3);
+        }, {
+                textAlign: 'left',
+                textBaseline: 'top',
+                fillStyle: '#fff',
+                font: '32pt Sans',
+            });
+    }
+
+    draw() {
         const { x, y, dir, ribbit, tongue } = this.player;
         // draw last ribbit
         if (ribbit.x && ribbit.y) {
-            renderer.isolatePath(() => {
-                renderer.arc(ribbit.x, ribbit.y, 2 * (RIBBIT_REST - ribbit.cooldown), 0, Math.PI * 2);
-                renderer.fill();
+            this.renderer.isolatePath(() => {
+                this.renderer.arc(ribbit.x, ribbit.y, 2 * (RIBBIT_REST - ribbit.cooldown), 0, Math.PI * 2);
+                this.renderer.fill();
             }, {
                     fillStyle: '#0f0',
                     // globalAlpha: 1 / Math.pow(RIBBIT_REST - ribbit.cooldown, 2),
@@ -160,10 +222,10 @@ class Game extends State {
         }
 
         // draw player
-        renderer.isolatePath(() => {
-            renderer.translate(x, y);
-            renderer.isolatePath(() => {
-                renderer.fillText('RIBBIT!', 0, -50);
+        this.renderer.isolatePath(() => {
+            this.renderer.translate(x, y);
+            this.renderer.isolatePath(() => {
+                this.renderer.fillText('RIBBIT!', 0, -50);
             }, {
                     font: '20pt Arial',
                     fillStyle: '#f00',
@@ -171,20 +233,20 @@ class Game extends State {
                     textAlign: 'center',
                     textBaseline: 'bottom',
                 });
-            renderer.scale(dir, 1);
-            renderer.drawSprite('frog', -40, -40, 80, 80);
+            this.renderer.scale(dir, 1);
+            this.renderer.drawSprite('frog', -FROG_SIZE / 2, -FROG_SIZE / 2, FROG_SIZE, FROG_SIZE);
             // draw tongue
             if (tongue.active) {
-                renderer.isolatePath(() => {
-                    renderer.translate(33, -23);
+                this.renderer.isolatePath(() => {
+                    this.renderer.translate(33, -23);
                     const tongueX = tongue.length * Math.cos(-Math.PI / 4);
                     const tongueY = tongue.length * Math.sin(-Math.PI / 4);
-                    renderer.moveTo(0, 0);
-                    renderer.lineTo(tongueX, tongueY);
-                    renderer.stroke();
-                    renderer.path(() => {
-                        renderer.arc(tongueX, tongueY, TONGUE_TIP_SIZE, 0, Math.PI * 2);
-                        renderer.fill();
+                    this.renderer.moveTo(0, 0);
+                    this.renderer.lineTo(tongueX, tongueY);
+                    this.renderer.stroke();
+                    this.renderer.path(() => {
+                        this.renderer.arc(tongueX, tongueY, TONGUE_TIP_SIZE, 0, Math.PI * 2);
+                        this.renderer.fill();
                     }, {
                             fillStyle: '#ff0055',
                         });
@@ -194,37 +256,17 @@ class Game extends State {
                         strokeStyle: '#ff0055',
                     });
             }
-        });
+        }, {
+                globalAlpha: 1 - (this.player.injury || 0) / (2 * MAX_INJURY),
+            });
 
         // draw flies
         this.flies.forEach(fly => {
-            renderer.isolatePath(() => {
-                renderer.strokeAndFillCircle(fly.x, fly.y, FLY_SIZE);
-                renderer.path(() => {
-                    renderer.oscillateText('buzz', fly.x + FLY_SIZE, fly.y, this.frame * 2, { amplitude: 10, outline: false });
-                }, {
-                    fillStyle: '#fff',
-                    textAlign: 'left',
-                });
-                renderer.path(() => {
-                    renderer.oscillateText('buzz', fly.x - FLY_SIZE, fly.y, this.frame * 2, { amplitude: 10, reverse: true, outline: false });
-                }, {
-                    fillStyle: '#fff',
-                    textAlign: 'right',
-                });
-            }, {
-                lineWidth: 4,
-                strokeStyle: '#fff',
-                fillStyle: fly.trapped ? '#f00' : '#000',
-            });
-            renderer.isolatePath(() => {
-               renderer.fillText(`Score: ${this.player.score}`, 3, 3); 
-            }, {
-                textAlign: 'left',
-                textBaseline: 'top',
-                fillStyle: '#fff',
-                font: '32pt Sans',
-            });
+            this.drawInsect(fly, 'FLY');
+        });
+        // draw flies
+        this.bees.forEach(bee => {
+            this.drawInsect(bee, 'BEE');
         });
     }
 }

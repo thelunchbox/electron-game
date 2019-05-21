@@ -10,11 +10,11 @@ class Title extends State {
         return super.update(dt, keys);
     }
 
-    draw(renderer) {
-        renderer.isolatePath(() => {
-            renderer.strokeAndFillText('Frog Battle', renderer.center.x, renderer.center.y);
-            renderer.isolatePath(() => {
-                renderer.oscillateText('Press Any Key', renderer.center.x, renderer.center.y + 100, this.frame, { drag: 3 });
+    draw() {
+        this.renderer.isolatePath(() => {
+            this.renderer.strokeAndFillText('Frog Battle', this.renderer.center.x, this.renderer.center.y);
+            this.renderer.isolatePath(() => {
+                this.renderer.oscillateText('Press Any Key', this.renderer.center.x, this.renderer.center.y + 100, this.frame, { drag: 3 });
             }, {
                 font: '36pt Arial',
             })
