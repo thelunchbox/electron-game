@@ -20,6 +20,16 @@ class Player {
             y: null,
         };
     }
+
+    update(player) {
+        if (player.ribbit.cooldown > 0) {
+            player.ribbit.cooldown -= 1;
+            if (player.ribbit.cooldown == 0) {
+                player.ribbit.x = null;
+                player.ribbit.y = null;
+            }
+        }
+    }
 }
 
 module.exports = Player;

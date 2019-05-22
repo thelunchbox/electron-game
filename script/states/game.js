@@ -36,13 +36,7 @@ class Game extends State {
         this.addInsects(this.flies, MAX_FLIES);
         this.addInsects(this.bees, MAX_BEES);
 
-        if (this.player.ribbit.cooldown > 0) {
-            this.player.ribbit.cooldown -= 1;
-            if (this.player.ribbit.cooldown == 0) {
-                this.player.ribbit.x = null;
-                this.player.ribbit.y = null;
-            }
-        }
+        this.player.update(this.player);
 
         if (this.player.injury) {
             // console.log(1 - (this.player.injury || 0) / (2 * MAX_INJURY));
