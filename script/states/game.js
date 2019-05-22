@@ -126,7 +126,7 @@ class Game extends State {
             }
         }
         this.flies.forEach(fly => fly.update(fly, this.player));
-        // this.bees.forEach(bee => bee.updateInsect(bee, this.player));
+        this.bees.forEach(bee => bee.update(bee, this.player));
         super.update();
     }
 
