@@ -3,7 +3,6 @@ const { GAME_CONSTANTS, INSECT_CONSTANTS, PLAYER_CONSTANTS } = require ('../cons
 const { GAME_HEIGHT, GAME_WIDTH } = GAME_CONSTANTS;
 const { INSECT_SIZE, INSECT_SPEED } = INSECT_CONSTANTS;
 const { TONGUE_TIP_SIZE } = PLAYER_CONSTANTS;
-
 class Insect {
     constructor() {
         this.x = Math.random() * GAME_WIDTH;

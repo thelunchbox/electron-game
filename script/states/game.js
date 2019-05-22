@@ -1,5 +1,6 @@
 const State = require('../state');
 const { STATES } = require('../stateFactory');
+const Insect = require('../gameObjects/insect');
 
 const { GAME_CONSTANTS, PLAYER_CONSTANTS, INSECT_CONSTANTS } = require('../constants');
 
@@ -47,52 +48,11 @@ class Game extends State {
 
     addInsects(list, max) {
         if (list.length < max) {
-            list.push({
-                x: Math.random() * GAME_WIDTH,
-                y: Math.random() * GAME_HEIGHT,
-                target: {
-                    x: Math.random() * GAME_WIDTH,
-                    y: Math.random() * GAME_HEIGHT,
-                },
-                trapped: false,
-            });
-        }
-    }
-
-    updateInsect(insect) {
-        const { x, y, dir, tongue } = this.player;
-        if (tongue.active) {
-            const tongueX = this.player.x + dir * (tongue.length * Math.cos(-Math.PI / 4));
-            const tongueY = this.player.y + (tongue.length * Math.sin(-Math.PI / 4));
-            const diffX = Math.abs(insect.x - tongueX);
-            const diffY = Math.abs(insect.y - tongueY);
-            // did we eat an insect?
-            if (diffX <= TONGUE_TIP_SIZE + INSECT_SIZE + 2 * INSECT_SPEED && diffY <= TONGUE_TIP_SIZE + INSECT_SIZE + 2 * INSECT_SPEED) {
-                // yup
-                insect.trapped = true;
-            }
-        }
-        if (insect.trapped) {
-            insect.x = x + dir * (tongue.length * Math.cos(-Math.PI / 4)) + dir * 33;
-            insect.y = y + (tongue.length * Math.sin(-Math.PI / 4)) - 23;
-        } else if (insect.target) {
-            const diffX = Math.abs(insect.x - insect.target.x);
-            const diffY = Math.abs(insect.y - insect.target.y);
-            if (diffX <= INSECT_SPEED && diffY <= INSECT_SPEED) {
-                insect.target = {
-                    x: Math.random() * GAME_WIDTH,
-                    y: Math.random() * GAME_HEIGHT,
-                };
-            }
-
-            const angle = Math.atan2(insect.target.y - insect.y, insect.target.x - insect.x);
-            insect.x += INSECT_SPEED * Math.cos(angle);
-            insect.y += INSECT_SPEED * Math.sin(angle);
-        }
+            list.push(new Insect);
+        };
     }
 
     update(dt, keys) {
-
         this.addInsects(this.flies, MAX_FLIES);
         this.addInsects(this.bees, MAX_BEES);
 
@@ -165,8 +125,8 @@ class Game extends State {
                 };
             }
         }
-        this.flies.forEach(fly => this.updateInsect(fly));
-        this.bees.forEach(bee => this.updateInsect(bee));
+        this.flies.forEach(fly => fly.update(fly, this.player));
+        // this.bees.forEach(bee => bee.updateInsect(bee, this.player));
         super.update();
     }
 
