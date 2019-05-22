@@ -1,6 +1,7 @@
 const State = require('../state');
 const { STATES } = require('../stateFactory');
 const Insect = require('../gameObjects/insect');
+const Player = require('../gameObjects/player');
 
 const { GAME_CONSTANTS, PLAYER_CONSTANTS, INSECT_CONSTANTS } = require('../constants');
 
@@ -22,22 +23,7 @@ class Game extends State {
         this.flies = [];
         this.bees = [];
 
-        this.player = {
-            score: 0,
-            x: 800,
-            y: 800,
-            dir: 1,
-            tongue: {
-                length: 0,
-                active: null,
-                frame: 0,
-            },
-            ribbit: {
-                cooldown: 0,
-                x: null,
-                y: null,
-            }
-        };
+        this.player = new Player(800, 800);
     }
 
     addInsects(list, max) {
