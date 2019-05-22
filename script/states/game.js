@@ -1,17 +1,22 @@
 const State = require('../state');
 const { STATES } = require('../stateFactory');
 
-const SPEED = 10;
-const RIBBIT_REST = 60 * 5; // 60 fps * number of seconds
-const RIBBIT_FADE = 300;
+const { GAME_CONSTANTS, PLAYER_CONSTANTS, INSECT_CONSTANTS } = require('../constants');
+
+const { GAME_HEIGHT, GAME_WIDTH } = GAME_CONSTANTS;
+const { RIBBIT_REST, SPEED, TONGUE_TIP_SIZE } = PLAYER_CONSTANTS;
+const { INSECT_SIZE, INSECT_SPEED } = INSECT_CONSTANTS;
+
+// const RIBBIT_REST = 60 * 5; // 60 fps * number of seconds
+// const RIBBIT_FADE = 300;
 const MAX_FLIES = 10;
 const MAX_BEES = 2;
 const MAX_INJURY = 120;
-const GAME_WIDTH = 1600;
-const GAME_HEIGHT = 900;
-const INSECT_SPEED = 5;
-const INSECT_SIZE = 12;
-const TONGUE_TIP_SIZE = 6;
+// const GAME_WIDTH = 1600;
+// const GAME_HEIGHT = 900;
+// const INSECT_SPEED = 5;
+// const INSECT_SIZE = 12;
+// const TONGUE_TIP_SIZE = 6;
 const FROG_SIZE = 80;
 
 class Game extends State {
