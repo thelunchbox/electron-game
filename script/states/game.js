@@ -1,14 +1,9 @@
 const State = require('../state');
-const { STATES } = require('../stateFactory');
+// commented out STATES, assuming we'd need this later...
+// const { STATES } = require('../stateFactory');
 const Bee = require('../gameObjects/bee');
 const Insect = require('../gameObjects/insect');
 const Player = require('../gameObjects/player');
-
-const { GAME_CONSTANTS, PLAYER_CONSTANTS, INSECT_CONSTANTS } = require('../constants');
-
-const { GAME_HEIGHT, GAME_WIDTH } = GAME_CONSTANTS;
-const { FROG_SIZE, MAX_INJURY, RIBBIT_REST, SPEED, TONGUE_TIP_SIZE } = PLAYER_CONSTANTS;
-const { INSECT_SIZE } = INSECT_CONSTANTS;
 
 const MAX_FLIES = 10;
 const MAX_BEES = 2;
