@@ -1,19 +1,18 @@
 const State = require('../state');
 const { STATES } = require('../stateFactory');
+const Bee = require('../gameObjects/bee');
+const Fly = require('../gameObjects/fly');
 const Insect = require('../gameObjects/insect');
 const Player = require('../gameObjects/player');
 
 const { GAME_CONSTANTS, PLAYER_CONSTANTS, INSECT_CONSTANTS } = require('../constants');
 
 const { GAME_HEIGHT, GAME_WIDTH } = GAME_CONSTANTS;
-const { RIBBIT_REST, SPEED, TONGUE_TIP_SIZE } = PLAYER_CONSTANTS;
+const { FROG_SIZE, MAX_INJURY, RIBBIT_REST, SPEED, TONGUE_TIP_SIZE } = PLAYER_CONSTANTS;
 const { INSECT_SIZE } = INSECT_CONSTANTS;
 
 const MAX_FLIES = 10;
 const MAX_BEES = 2;
-const MAX_INJURY = 120;
-
-const FROG_SIZE = 80;
 
 class Game extends State {
 
@@ -26,81 +25,15 @@ class Game extends State {
         this.player = new Player(800, 800);
     }
 
-    addInsects(list, max) {
-        if (list.length < max) {
-            list.push(new Insect);
-        };
-    }
-
     update(dt, keys) {
-        this.addInsects(this.flies, MAX_FLIES);
-        this.addInsects(this.bees, MAX_BEES);
+        if (this.flies.length < MAX_FLIES) { this.flies.push(new Fly); }
 
-        this.player.update(this.player);
+        if (this.bees.length < MAX_BEES) { this.bees.push(new Bee); }
 
-        if (this.player.injury) {
-            // console.log(1 - (this.player.injury || 0) / (2 * MAX_INJURY));
-            this.player.injury--;
-        }
+        this.player.update(keys, this.frame, this.flies, this.bees);
 
-        if (this.player.tongue.active) {
-            const tFrame = this.frame - this.player.tongue.frame;
-            const tDiff = ((tFrame - 15) ** 2) / 5;
-            if (this.player.tongue.active == 'extend') {
-                this.player.tongue.length = this.player.tongue.length + tDiff;
-                if (tFrame == 15) {
-                    this.player.tongue.active = 'retract';
-                }
-            } else if (this.player.tongue.active == 'retract') {
-                this.player.tongue.length = Math.max(0, this.player.tongue.length - tDiff);
-                if (this.player.tongue.length == 0) {
-                    this.player.tongue.active = null;
-                    this.flies.filter(fly => fly.trapped).forEach(fly => {
-                        const index = this.flies.indexOf(fly);
-                        this.flies.splice(index, 1);
-                        this.player.score += 0.5;
-                    });
-                    this.bees.filter(bee => bee.trapped).forEach(bee => {
-                        const index = this.bees.indexOf(bee);
-                        this.bees.splice(index, 1);
-                        this.player.score -= 5;
-                        this.player.injury = MAX_INJURY;
-                    });
-                }
-            }
-        } else {
-            if (keys.includes(38)) {
-                this.player.y -= SPEED;
-            } else if (keys.includes(40)) {
-                this.player.y += SPEED;
-            }
-
-            if (keys.includes(37)) {
-                this.player.x -= SPEED;
-                this.player.dir = -1;
-            } else if (keys.includes(39)) {
-                this.player.x += SPEED;
-                this.player.dir = 1;
-            }
-
-            this.player.x = Math.min(GAME_WIDTH - FROG_SIZE / 2, Math.max(FROG_SIZE / 2, this.player.x));
-            this.player.y = Math.min(GAME_HEIGHT - FROG_SIZE / 2, Math.max(FROG_SIZE / 2, this.player.y));
-
-            if (keys.includes(70) && !this.player.injury) {
-                this.player.tongue.active = 'extend';
-                this.player.tongue.frame = this.frame;
-            }
-
-            if (keys.includes(32) && !this.player.ribbit.cooldown) {
-                this.player.ribbit = {
-                    cooldown: RIBBIT_REST,
-                    x: this.player.x,
-                    y: this.player.y,
-                };
-            }
-        }
-        this.flies.forEach(fly => fly.update(fly, this.player));
-        this.bees.forEach(bee => bee.update(bee, this.player));
+        this.flies.forEach(fly => fly.update(this.player));
+        this.bees.forEach(bee => bee.update(this.player));
         super.update();
     }
 
