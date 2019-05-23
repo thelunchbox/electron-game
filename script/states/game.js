@@ -1,7 +1,6 @@
 const State = require('../state');
 const { STATES } = require('../stateFactory');
 const Bee = require('../gameObjects/bee');
-const Fly = require('../gameObjects/fly');
 const Insect = require('../gameObjects/insect');
 const Player = require('../gameObjects/player');
 
