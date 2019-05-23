@@ -47,8 +47,27 @@ class Insect {
         }
     };
 
-    draw(renderer) {
-
+    draw(renderer, frame) {
+        renderer.isolatePath(() => {
+            renderer.translate(this.x, this.y);
+            renderer.strokeAndFillCircle(0, 0, INSECT_SIZE);
+            renderer.path(() => {
+                renderer.oscillateText('buzz', INSECT_SIZE, 0, frame * 2, { amplitude: 10, outline: false });
+            }, {
+                fillStyle: '#fff',
+                textAlign: 'left',
+            });
+            renderer.path(() => {
+                renderer.oscillateText('buzz', -INSECT_SIZE, 0, frame * 2, { amplitude: 10, reverse: true, outline: false });
+            }, {
+                fillStyle: '#fff',
+                textAlign: 'right',
+            });
+        }, {
+            lineWidth: 4,
+            strokeStyle: '#fff',
+            fillStyle: this.trapped ? '#f00' : '#000',
+        });
     };
 }
 
