@@ -1,11 +1,14 @@
 const {app, BrowserWindow} = require('electron');
+const { GAME_CONSTANTS } = require('./script/constants');
+
+const { GAME_WIDTH, GAME_HEIGHT } = GAME_CONSTANTS;
 
 // Keep a global reference of the window object, if you don't, the window will
 // be closed automatically when the JavaScript object is garbage collected.
 let mainWindow;
 
 function createWindow () {
-  mainWindow = new BrowserWindow({width: 1600, height: 900});
+  mainWindow = new BrowserWindow({width: GAME_WIDTH, height: GAME_HEIGHT});
   mainWindow.loadFile('index.html');
   // mainWindow.webContents.openDevTools()
 
