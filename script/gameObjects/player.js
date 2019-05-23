@@ -2,7 +2,7 @@ const { GAME_CONSTANTS, INSECT_CONSTANTS, PLAYER_CONSTANTS } = require('../const
 
 const { GAME_HEIGHT, GAME_WIDTH } = GAME_CONSTANTS;
 const { INSECT_SIZE, INSECT_SPEED } = INSECT_CONSTANTS;
-const { FROG_SIZE, MAX_INJURY, RIBBIT_REST, SPEED, TOUNGUE_TIP_SIZE } = PLAYER_CONSTANTS;
+const { FROG_SIZE, MAX_INJURY, RIBBIT_REST, SPEED, TONGUE_TIP_SIZE } = PLAYER_CONSTANTS;
 
 class Player {
     constructor(x, y) {
@@ -27,6 +27,68 @@ class Player {
         this._handleTongue(keys, frame, flies, bees);
         this._handleRibbit(keys);
         this._movePlayer(keys);
+    }
+
+    draw(renderer, frame) {
+        // draw last ribbit
+        if (this.ribbit.x && this.ribbit.y) {
+            renderer.isolatePath(() => {
+                renderer.arc(this.ribbit.x, this.ribbit.y, 2 * (RIBBIT_REST - this.ribbit.cooldown), 0, Math.PI * 2);
+                renderer.fill();
+            }, {
+                fillStyle: '#0f0',
+                globalAlpha: this.ribbit.cooldown / RIBBIT_REST,
+            })
+        }
+
+        // draw player
+        renderer.isolatePath(() => {
+            renderer.translate(this.x, this.y);
+            renderer.isolatePath(() => {
+                renderer.fillText('RIBBIT!', 0, -50);
+            }, {
+                font: '20pt Arial',
+                fillStyle: '#f00',
+                globalAlpha: this.ribbit.cooldown / RIBBIT_REST,
+                textAlign: 'center',
+                textBaseline: 'bottom'
+            });
+            renderer.scale(this.dir, 1);
+            renderer.drawSprite('frog', -FROG_SIZE / 2, -FROG_SIZE / 2, FROG_SIZE, FROG_SIZE);
+            // draw tongue
+            if (this.tongue.active) {
+                renderer.isolatePath(() => {
+                    renderer.translate(33, -23);
+                    const tongueX = this.tongue.length * Math.cos(-Math.PI / 4);
+                    const tongueY = this.tongue.length * Math.sin(-Math.PI / 4);
+                    renderer.moveTo(0, 0);
+                    renderer.lineTo(tongueX, tongueY);
+                    renderer.stroke();
+                    renderer.path(() => {
+                        renderer.arc(tongueX, tongueY, TONGUE_TIP_SIZE, 0, Math.PI * 2);
+                        renderer.fill();
+                    }, {
+                        fillStyle: '#ff0055',
+                    });
+                }, {
+                    lineCap: 'round',
+                    lineWidth: 4,
+                    strokeStyle: '#ff0055',
+                });
+            }
+        }, {
+            globalAlpha: 1 - (this.injury || 0) / (2 * MAX_INJURY),
+        });
+
+        // draw score
+        renderer.isolatePath(() => {
+            renderer.fillText(`Score: ${this.score}`, 3, 3);
+        }, {
+            textAlign: 'left',
+            textBaseline: 'top',
+            fillStyle: '#fff',
+            font: '32pt Sans',
+        });
     }
 
     _handleTongue(keys, frame, flies, bees) {
