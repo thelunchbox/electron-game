@@ -7,7 +7,7 @@ const { GAME_CONSTANTS, RAINBOW } = require('../constants')
 
 const MAX_FLIES = 10;
 const MAX_BEES = 2;
-const TIME_LIMIT = 1; //60 * 1000;
+const TIME_LIMIT = 60 * 1000;
 const WINNER_COOLDOWN = 5 * 1000;
 
 class Game extends State {
