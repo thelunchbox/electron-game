@@ -14,21 +14,26 @@ class Insect {
         this.trapped = false;
     }
 
-    update(player) {
-        const { x, y, dir, tongue } = player;
-        if (tongue.active) {
-            const tongueX = x + dir * (tongue.length * Math.cos(-Math.PI / 4));
-            const tongueY = y + (tongue.length * Math.sin(-Math.PI / 4));
-            const diffX = Math.abs(this.x - tongueX);
-            const diffY = Math.abs(this.y - tongueY);
-            // did we eat an insect?
-            if (diffX <= TONGUE_TIP_SIZE + INSECT_SIZE + 2 * INSECT_SPEED && diffY <= TONGUE_TIP_SIZE + INSECT_SIZE + 2 * INSECT_SPEED) {
-                // yup
-                this.trapped = true;
+    update(players) {
+        players.forEach(player => {
+            if (this.trapped) return;
+            const { x, y, dir, tongue } = player;
+            if (tongue.active) {
+                const tongueX = x + dir * (tongue.length * Math.cos(-Math.PI / 4));
+                const tongueY = y + (tongue.length * Math.sin(-Math.PI / 4));
+                const diffX = Math.abs(this.x - tongueX);
+                const diffY = Math.abs(this.y - tongueY);
+                // did we eat an insect?
+                if (diffX <= TONGUE_TIP_SIZE + INSECT_SIZE + 2 * INSECT_SPEED && diffY <= TONGUE_TIP_SIZE + INSECT_SIZE + 2 * INSECT_SPEED) {
+                    // yup
+                    this.trapped = true;
+                    this.trappedBy = { x, y, dir, tongue };
+                }
             }
-        }
+        });
 
         if (this.trapped) {
+            const { x, y, dir, tongue } = this.trappedBy;
             this.x = x + dir * (tongue.length * Math.cos(-Math.PI / 4)) + dir * 33;
             this.y = y + (tongue.length * Math.sin(-Math.PI / 4)) - 23;
         } else if (this.target) {
@@ -40,11 +45,11 @@ class Insect {
                     y: Math.random() * GAME_HEIGHT,
                 };
             }
-
-            const angle = Math.atan2(this.target.y - this.y, this.target.x - this.x);
-            this.x += INSECT_SPEED * Math.cos(angle);
-            this.y += INSECT_SPEED * Math.sin(angle);
         }
+
+        const angle = Math.atan2(this.target.y - this.y, this.target.x - this.x);
+        this.x += INSECT_SPEED * Math.cos(angle);
+        this.y += INSECT_SPEED * Math.sin(angle);
     };
 
     draw(renderer, frame) {

@@ -1,11 +1,13 @@
 const { GAME_CONSTANTS, PLAYER_CONSTANTS } = require('../constants');
-
+const inputConfigs = require('../config/input');
 const { GAME_HEIGHT, GAME_WIDTH } = GAME_CONSTANTS;
 const { FROG_SIZE, MAX_INJURY, RIBBIT_REST, SPEED, TONGUE_TIP_SIZE } = PLAYER_CONSTANTS;
 
 class Player {
-    constructor(x, y) {
+    constructor(x, y, id) {
         this.score = 0,
+        this.id = id,
+        this.input = inputConfigs[id],
         this.x = x,
         this.y = y,
         this.dir = 1,
@@ -81,7 +83,7 @@ class Player {
 
         // draw score
         renderer.isolatePath(() => {
-            renderer.fillText(`Score: ${this.score}`, 3, 3);
+            renderer.fillText(`Score: ${this.score}`, 3 + this.id * 400, 3);
         }, {
             textAlign: 'left',
             textBaseline: 'top',
@@ -119,7 +121,7 @@ class Player {
                 }
             }
         } else {
-            if (keys.includes(70) && !this.injury) {
+            if (keys.includes(this.input.tongue) && !this.injury) {
                 this.tongue.active = 'extend';
                 this.tongue.frame = frame;
             }
@@ -142,7 +144,7 @@ class Player {
         }
 
         if (!this.tongue.active) {
-            if (keys.includes(32) && !this.ribbit.cooldown) {
+            if (keys.includes(this.input.ribbit) && !this.ribbit.cooldown) {
                 this.ribbit = {
                     cooldown: RIBBIT_REST,
                     x: this.x,
@@ -154,16 +156,16 @@ class Player {
 
     _movePlayer(keys) {
         if (!this.tongue.active) {
-            if (keys.includes(38)) {
+            if (keys.includes(this.input.up)) {
                 this.y -= SPEED;
-            } else if (keys.includes(40)) {
+            } else if (keys.includes(this.input.down)) {
                 this.y += SPEED;
             }
     
-            if (keys.includes(37)) {
+            if (keys.includes(this.input.left)) {
                 this.x -= SPEED;
                 this.dir = -1;
-            } else if (keys.includes(39)) {
+            } else if (keys.includes(this.input.right)) {
                 this.x += SPEED;
                 this.dir = 1;
             }

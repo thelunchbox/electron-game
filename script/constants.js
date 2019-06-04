@@ -16,8 +16,19 @@ const INSECT_CONSTANTS = {
   INSECT_SIZE: 12,
 };
 
+const RAINBOW = [
+  '#f00',
+  '#ff0',
+  '#0f0',
+  '#0ff',
+  '#00f',
+  '#f0f',
+  '#b38b6d',
+];
+
 module.exports = {
   GAME_CONSTANTS,
   PLAYER_CONSTANTS,
   INSECT_CONSTANTS,
+  RAINBOW,
 };
