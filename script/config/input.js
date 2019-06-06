@@ -5,7 +5,7 @@ const inputKeysDev = [{
     down: 40,
     left: 37,
     right: 39,
-}];
+}, {}, {}, {}];
 
 const inputKeys = [{
     tongue: 54,
@@ -37,5 +37,6 @@ const inputKeys = [{
     right: 67,
 }];
 
-// module.exports = inputKeysDev;
-module.exports = inputKeys;
+const isDev = true;
+
+module.exports = isDev ? inputKeysDev : inputKeys;
