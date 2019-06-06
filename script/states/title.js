@@ -14,7 +14,7 @@ class Title extends State {
         renderer.isolatePath(() => {
             renderer.strokeAndFillText('Game Title', renderer.center.x, renderer.center.y);
             renderer.isolatePath(() => {
-                renderer.oscillateText('Press Any Key', renderer.center.x, renderer.center.y + 100, this.frame, { drag: 3 });
+                renderer.oscillateText('Press Any Key', renderer.center.x, renderer.center.y + 100, this.frame, { drag: 3, padding: 3 });
             }, {
                 font: '36pt Arial',
             })
