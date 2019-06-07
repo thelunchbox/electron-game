@@ -14,7 +14,7 @@ class Title extends State {
         this.renderer.isolatePath(() => {
             this.renderer.strokeAndFillText('Frog Battle', this.renderer.center.x, this.renderer.center.y);
             this.renderer.isolatePath(() => {
-                this.renderer.oscillateText('Press Any Key', this.renderer.center.x, this.renderer.center.y + 100, this.frame, { drag: 3 });
+                this.renderer.oscillateText('Press Any Key', this.renderer.center.x, this.renderer.center.y + 100, this.frame, { drag: 3, padding: 2 });
             }, {
                 font: '36pt Arial',
             })

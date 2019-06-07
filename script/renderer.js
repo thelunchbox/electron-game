@@ -117,15 +117,17 @@ class Renderer {
             drag = 2,
             outline = true,
             reverse = false,
+            padding = 0,
         } = options;
         const size = this.context.measureText(text);
+        const textWidth = size.width + (text.length * padding);
         let x0 = x;
         switch(this.textAlign) {
             case 'center':
-                x0 = x - size.width / 2;
+                x0 = x - textWidth / 2;
                 break;
             case 'right':
-                x0 = x - size.width;
+                x0 = x - textWidth;
                 break;
             case 'left':
             default:
@@ -137,8 +139,9 @@ class Renderer {
         text.split('').forEach((c, i) => {
             const renderedSize = this.context.measureText(rendered);
             const f = reverse ? frame + drag*i : frame - drag*i;
-            if (outline) this.strokeAndFillText(c, x0 + renderedSize.width, y + (amplitude * Math.sin((f * period) + shift)));
-            else this.fillText(c, x0 + renderedSize.width, y + (amplitude * Math.sin((f * period) + shift)));
+            const offset = i * padding;
+            if (outline) this.strokeAndFillText(c, x0 + renderedSize.width + offset, y + (amplitude * Math.sin((f * period) + shift)));
+            else this.fillText(c, x0 + renderedSize.width + offset, y + (amplitude * Math.sin((f * period) + shift)));
             rendered += c;
         });
         this.context.restore();
