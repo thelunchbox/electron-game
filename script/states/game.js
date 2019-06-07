@@ -22,8 +22,8 @@ class Game extends State {
         this.players = [
             new Player(400, 400, 0),
             new Player(400, 800, 1),
-            new Player(800, 400, 2),
-            new Player(800, 800, 3),
+            new Player(1200, 400, 2),
+            new Player(1200, 800, 3),
         ];
     }
 
@@ -68,8 +68,9 @@ class Game extends State {
                 this.renderer.strokeAndFillText(Math.floor(time), this.renderer.center.x, GAME_CONSTANTS.GAME_HEIGHT - 5);
             }, {
                 font: '72pt Arial',
-                fillStyle: RAINBOW[Math.floor(this.frame / 50) % RAINBOW.length],
+                fillStyle: RAINBOW[Math.floor(this.frame / 60) % RAINBOW.length],
                 strokeStyle: '#000',
+                lineWidth: 10,
                 textAlign: 'center',
                 textBaseline: 'bottom'
             });
