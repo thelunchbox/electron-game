@@ -2,9 +2,44 @@ const { remote } = require('electron');
 const { getStartingState, getNextState } = require('./stateFactory');
 const Renderer = require('./renderer');
 const electronWindow = remote.getCurrentWindow();
-const path = require('path');
 
-const keys = [];
+const {
+    gamepads,
+    addKeyboardController,
+    GamepadButton,
+    GamepadButtonTypes,
+    GamepadTypes,
+    KeyboardKeyCodes,
+    processGamepadActivity,
+    setDefaultConfiguration,
+} = require('gamepad-flex');
+
+addKeyboardController(true);
+
+const INPUTS = {
+    UP: 'UP',
+    DOWN: 'DOWN',
+    LEFT: 'LEFT',
+    RIGHT: 'RIGHT',
+    A: 'A',
+    B: 'B',
+    C: 'C',
+    D: 'D',
+    START: 'START',
+};
+
+setDefaultConfiguration(GamepadTypes.KEYBOARD, [
+    new GamepadButton(INPUTS.UP, KeyboardKeyCodes.w, GamepadButtonTypes.KEY, -1),
+    new GamepadButton(INPUTS.DOWN, KeyboardKeyCodes.s, GamepadButtonTypes.KEY, 1),
+    new GamepadButton(INPUTS.LEFT, KeyboardKeyCodes.a, GamepadButtonTypes.KEY, -1),
+    new GamepadButton(INPUTS.RIGHT, KeyboardKeyCodes.d, GamepadButtonTypes.KEY, 1),
+    new GamepadButton(INPUTS.A, KeyboardKeyCodes.j, GamepadButtonTypes.KEY, 1),
+    new GamepadButton(INPUTS.B, KeyboardKeyCodes.k, GamepadButtonTypes.KEY, 1),
+    new GamepadButton(INPUTS.C, KeyboardKeyCodes.l, GamepadButtonTypes.KEY, 1),
+    new GamepadButton(INPUTS.D, KeyboardKeyCodes.i, GamepadButtonTypes.KEY, 1),
+    new GamepadButton(INPUTS.START, KeyboardKeyCodes.enter, GamepadButtonTypes.KEY, 1),
+]);
+
 window.addEventListener('keydown', ({ keyCode }) => {
     switch (keyCode) {
         case 27:
@@ -20,18 +55,7 @@ window.addEventListener('keydown', ({ keyCode }) => {
         case 123: // F12
             remote.getCurrentWebContents().openDevTools();
             break;
-        default: // all others
-            const index = keys.indexOf(keyCode);
-            if (index > -1) return;
-            keys.push(keyCode);
-            break;
     }
-});
-
-window.addEventListener('keyup', ({ keyCode }) => {
-    const index = keys.indexOf(keyCode);
-    if (index < 0) return;
-    keys.splice(index, 1);
 });
 
 const renderer = new Renderer(document.body);
@@ -47,7 +71,8 @@ const update = () => {
 
     try {
         // Update the current game state - it should return the new state type and args if we need to change
-        const next = state.update(dt, keys);
+        processGamepadActivity();
+        const next = state.update(dt);
         if (next) {
             state = getNextState(next);
         }

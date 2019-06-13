@@ -10,7 +10,7 @@
   "build": {
     "appId": "game.electron",
     "mac": {
-      "category": "sports.games"
+      "category": "apps.games"
     },
     "linux": {
       "target": [
@@ -23,6 +23,9 @@
   "devDependencies": {
     "electron": "^3.0.13",
     "electron-builder": "^20.40.2"
+  },
+  "dependencies": {
+    "gamepad-flex": "../gamepad-flex"
   },
   "author": {
     "name": "Alex Merkert",
