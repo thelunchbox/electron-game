@@ -115,6 +115,8 @@ class Renderer {
             period = 1/10,
             shift = 0,
             drag = 2,
+            outline = true,
+            reverse = false,
             padding = 0,
         } = options;
         const size = this.context.measureText(text);
@@ -136,9 +138,10 @@ class Renderer {
         let rendered = '';
         text.split('').forEach((c, i) => {
             const renderedSize = this.context.measureText(rendered);
-            const f = frame - drag*i;
+            const f = reverse ? frame + drag*i : frame - drag*i;
             const offset = i * padding;
-            this.strokeAndFillText(c, x0 + renderedSize.width + offset, y + (amplitude * Math.sin((f * period) + shift)));
+            if (outline) this.strokeAndFillText(c, x0 + renderedSize.width + offset, y + (amplitude * Math.sin((f * period) + shift)));
+            else this.fillText(c, x0 + renderedSize.width + offset, y + (amplitude * Math.sin((f * period) + shift)));
             rendered += c;
         });
         this.context.restore();
