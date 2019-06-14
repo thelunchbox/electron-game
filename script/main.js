@@ -38,7 +38,10 @@ const renderer = new Renderer(document.body);
 let state = getStartingState(renderer);
 
 // load any images - we could loop through the img folder if we needed to
-renderer.loadSprite('frog', './img/frog.png');
+renderer.loadColoredSprite('frog', '#d00', './img/frog.svg');
+renderer.loadColoredSprite('frog', '#09f', './img/frog.svg');
+renderer.loadColoredSprite('frog', '#0f0', './img/frog.svg');
+renderer.loadColoredSprite('frog', '#90f', './img/frog.svg');
 
 let last = (new Date()).getTime();
 const update = () => {

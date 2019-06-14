@@ -61,7 +61,17 @@ class Game extends State {
         });
 
         if (this.time > TIME_LIMIT) {
-            // display winner
+            const winner = this.players.reduce((best, frog) => frog.score > best.score ? frog : best, { score: -9999 });
+            this.renderer.isolatePath(() => {
+                this.renderer.oscillateText(`WINNER: ${winner.name || 'P' + (winner.id + 1)}`, this.renderer.center.x, this.renderer.center.y, this.frame * 2, { amplitude: 10, outline: true });
+            }, {
+                font: '72pt Arial',
+                fillStyle: RAINBOW[Math.floor(this.frame / 60) % RAINBOW.length],
+                strokeStyle: '#000',
+                lineWidth: 10,
+                textAlign: 'center',
+                textBaseline: 'middle'
+            });
         } else {
             const time = (TIME_LIMIT - this.time) / 1000;
             this.renderer.isolatePath(() => {

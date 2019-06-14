@@ -37,6 +37,6 @@ const inputKeys = [{
     right: 67,
 }];
 
-const isDev = true;
+const isDev = false;
 
 module.exports = isDev ? inputKeysDev : inputKeys;

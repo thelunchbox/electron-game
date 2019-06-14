@@ -1,4 +1,5 @@
 const IMAGE_CACHE = {};
+const fs = require('fs');
 
 class Renderer {
     constructor(root, options = {}) {
@@ -161,7 +162,7 @@ class Renderer {
         });
     }
 
-    animatePath(points, frame, options) {
+    animatePath(points, frame, options = {}) {
         const { wrap = false, length = points.length , repeat = false } = options;
         const start = Math.round(wrap ? frame % points.length : 0);
         const end = Math.round(wrap ? start + length : repeat ? frame % (length + 1): Math.min(length, frame));
@@ -173,19 +174,19 @@ class Renderer {
         this.context.stroke();
     }
 
-    fillPath(points, options) {
+    fillPath(points, options = {}) {
         const { close = true } = options;
         this.drawPath(points, close);
         this.context.fill();
     }
 
-    strokePath(points, options) {
+    strokePath(points, options = {}) {
         const { close = false } = options;
         this.drawPath(points, close);
         this.context.stroke();
     }
 
-    strokeAndFillPath(points, options) {
+    strokeAndFillPath(points, options = {}) {
         const { close = true } = options;
         this.drawPath(points, close);
         this.context.stroke();
@@ -193,11 +194,34 @@ class Renderer {
     }
 
     loadSprite(name, filepath) {
-        if (IMAGE_CACHE[name]) return IMAGE_CACHE[name];
+        if (IMAGE_CACHE[name]) return;
         const i = new Image();
         i.src = filepath;
         i.onload = () => {
             IMAGE_CACHE[name] = i;
+        }
+    }
+
+    loadColoredSprite(name, color, filepath) {
+        const cacheName = `${name}${color}`;
+        if (IMAGE_CACHE[cacheName]) return;
+        const i = new Image();
+        let file = filepath;
+        if (!fs.existsSync(file)) {
+            file = path.join(__dirname, 'img', file);
+        }
+        if (!fs.existsSync(file)) throw new Error(`Cannot find file ${file}`);
+    
+        if (!file.endsWith('.svg')) {
+            // find another way to tint this image
+            i.src = file;
+        } else {
+            const svgXml = fs.readFileSync(file, { encoding: 'utf8' });
+            const coloredSvgXml = svgXml.replace(/#000000/g, color);
+            i.src = "data:image/svg+xml;charset=utf-8," + coloredSvgXml;
+        }
+        i.onload = () => {
+            IMAGE_CACHE[cacheName] = i;
         }
     }
 

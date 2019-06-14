@@ -6,21 +6,21 @@ const { FROG_SIZE, MAX_INJURY, RIBBIT_REST, SPEED, TONGUE_TIP_SIZE } = PLAYER_CO
 class Player {
     constructor(x, y, id) {
         this.score = 0,
-        this.id = id,
-        this.input = inputConfigs[id],
-        this.x = x,
-        this.y = y,
-        this.dir = 1,
-        this.tongue = {
-            length: 0,
-            active: null,
-            frame: 0,
-        },
-        this.ribbit = {
-            cooldown: 0,
-            x: null,
-            y: null,
-        };
+            this.id = id,
+            this.input = inputConfigs[id],
+            this.x = x,
+            this.y = y,
+            this.dir = 1,
+            this.tongue = {
+                length: 0,
+                active: null,
+                frame: 0,
+            },
+            this.ribbit = {
+                cooldown: 0,
+                x: null,
+                y: null,
+            };
     }
 
     update(keys, frame, flies, bees) {
@@ -37,9 +37,9 @@ class Player {
                 renderer.arc(this.ribbit.x, this.ribbit.y, 2 * (RIBBIT_REST - this.ribbit.cooldown), 0, Math.PI * 2);
                 renderer.fill();
             }, {
-                fillStyle: '#0f0',
-                globalAlpha: this.ribbit.cooldown / RIBBIT_REST,
-            })
+                    fillStyle: '#0f0',
+                    globalAlpha: this.ribbit.cooldown / RIBBIT_REST,
+                })
         }
 
         // draw player
@@ -48,14 +48,30 @@ class Player {
             renderer.isolatePath(() => {
                 renderer.fillText('RIBBIT!', 0, -50);
             }, {
-                font: '20pt Arial',
-                fillStyle: '#f00',
-                globalAlpha: this.ribbit.cooldown / RIBBIT_REST,
-                textAlign: 'center',
-                textBaseline: 'bottom'
-            });
+                    font: '20pt Arial',
+                    fillStyle: '#f00',
+                    globalAlpha: this.ribbit.cooldown / RIBBIT_REST,
+                    textAlign: 'center',
+                    textBaseline: 'bottom'
+                });
             renderer.scale(this.dir, 1);
-            renderer.drawSprite('frog', -FROG_SIZE / 2, -FROG_SIZE / 2, FROG_SIZE, FROG_SIZE);
+            let color;
+            switch (this.id) {
+                case 0:
+                    color = '#d00';
+                    break;
+                case 1:
+                    color = '#09f';
+                    break;
+                case 2:
+                    color = '#0f0';
+                    break;
+                case 3:
+                    color = '#90f';
+                    break;
+            }
+
+            renderer.drawSprite(`frog${color}`, -FROG_SIZE / 2, -FROG_SIZE / 2, FROG_SIZE, FROG_SIZE);
             // draw tongue
             if (this.tongue.active) {
                 renderer.isolatePath(() => {
@@ -69,27 +85,27 @@ class Player {
                         renderer.arc(tongueX, tongueY, TONGUE_TIP_SIZE, 0, Math.PI * 2);
                         renderer.fill();
                     }, {
-                        fillStyle: '#ff0055',
-                    });
+                            fillStyle: '#ff0055',
+                        });
                 }, {
-                    lineCap: 'round',
-                    lineWidth: 4,
-                    strokeStyle: '#ff0055',
-                });
+                        lineCap: 'round',
+                        lineWidth: 4,
+                        strokeStyle: '#ff0055',
+                    });
             }
         }, {
-            globalAlpha: 1 - (this.injury || 0) / (2 * MAX_INJURY),
-        });
+                globalAlpha: 1 - (this.injury || 0) / (2 * MAX_INJURY),
+            });
 
         // draw score
         renderer.isolatePath(() => {
             renderer.fillText(`Score: ${this.score}`, 3 + this.id * 400, 3);
         }, {
-            textAlign: 'left',
-            textBaseline: 'top',
-            fillStyle: '#fff',
-            font: '32pt Sans',
-        });
+                textAlign: 'left',
+                textBaseline: 'top',
+                fillStyle: '#fff',
+                font: '32pt Sans',
+            });
     }
 
     _handleTongue(keys, frame, flies, bees) {
@@ -161,7 +177,7 @@ class Player {
             } else if (keys.includes(this.input.down)) {
                 this.y += SPEED;
             }
-    
+
             if (keys.includes(this.input.left)) {
                 this.x -= SPEED;
                 this.dir = -1;
