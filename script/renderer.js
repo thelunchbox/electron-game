@@ -148,6 +148,49 @@ class Renderer {
         this.context.restore();
     }
 
+    highlightText(text, x, y, options = {}) {
+        const {
+            range = [],
+            outline = false,
+            padding = 0,
+        } = options;
+        const size = this.context.measureText(text);
+        const textWidth = size.width + (text.length * padding);
+        let x0 = x;
+        switch(this.textAlign) {
+            case 'center':
+                x0 = x - textWidth / 2;
+                break;
+            case 'right':
+                x0 = x - textWidth;
+                break;
+            case 'left':
+            default:
+            break;
+        }
+        this.context.save();
+        this.context.textAlign = 'left';
+        let rendered = '';
+        text.split('').forEach((c, i) => {
+            const renderedSize = this.context.measureText(rendered);
+            const offset = i * padding;
+
+            const drawText = () => {
+                if (outline) this.strokeAndFillText(c, x0 + renderedSize.width + offset, y);
+                else this.fillText(c, x0 + renderedSize.width + offset, y);
+            }
+
+            if (range.includes(i)) 
+                this.isolatePath(drawText, {
+                    fillStyle: '#fff',
+                });
+            else drawText();
+
+            rendered += c;
+        });
+        this.context.restore();
+    }
+
     drawPath(points, close) {
         const [first, ...others] = points;
         this.context.moveTo(first.x, first.y);

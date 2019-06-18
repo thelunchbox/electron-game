@@ -8,7 +8,11 @@ const { GAME_WIDTH, GAME_HEIGHT } = GAME_CONSTANTS;
 let mainWindow;
 
 function createWindow () {
-  mainWindow = new BrowserWindow({width: GAME_WIDTH, height: GAME_HEIGHT});
+  mainWindow = new BrowserWindow({
+    width: GAME_WIDTH,
+    height: GAME_HEIGHT,
+    kiosk: true,
+  });
   mainWindow.loadFile('index.html');
   // mainWindow.webContents.openDevTools()
 

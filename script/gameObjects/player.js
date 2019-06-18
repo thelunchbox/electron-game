@@ -4,9 +4,10 @@ const { GAME_HEIGHT, GAME_WIDTH } = GAME_CONSTANTS;
 const { FROG_SIZE, MAX_INJURY, RIBBIT_REST, SPEED, TONGUE_TIP_SIZE } = PLAYER_CONSTANTS;
 
 class Player {
-    constructor(x, y, id) {
+    constructor(x, y, id, name) {
         this.score = 0,
             this.id = id,
+            this.name = name,
             this.input = inputConfigs[id],
             this.x = x,
             this.y = y,
@@ -85,11 +86,11 @@ class Player {
 
         // draw score
         renderer.isolatePath(() => {
-            renderer.fillText(`Score: ${this.score}`, 3 + this.id * 400, 3);
+            renderer.fillText(`${this.name || 'SCORE'}: ${this.score}`, 3 + this.id * 400, 3);
         }, {
                 textAlign: 'left',
                 textBaseline: 'top',
-                fillStyle: '#fff',
+                fillStyle: PLAYER_COLORS[this.id],
                 font: '32pt Sans',
             });
     }

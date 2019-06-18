@@ -7,7 +7,8 @@ const { GAME_CONSTANTS, RAINBOW } = require('../constants')
 
 const MAX_FLIES = 10;
 const MAX_BEES = 2;
-const TIME_LIMIT = 60 * 1000;
+const STARTUP = 3000;
+const TIME_LIMIT = 3000; // 60 * 1000;
 const WINNER_COOLDOWN = 5 * 1000;
 const RAINBOW_FRAME_LIMITER = 10;
 
@@ -18,22 +19,27 @@ class Game extends State {
 
         this.flies = [];
         this.bees = [];
-        this.time = 0;
+        this.time = -STARTUP;
 
         this.players = [
-            new Player(400, 400, 0),
-            new Player(400, 800, 1),
-            new Player(1200, 400, 2),
-            new Player(1200, 800, 3),
+            new Player(400, 400, 0, args.names[0].replace(/_/g, '')),
+            new Player(400, 800, 1, args.names[1].replace(/_/g, '')),
+            new Player(1200, 400, 2, args.names[2].replace(/_/g, '')),
+            new Player(1200, 800, 3, args.names[3].replace(/_/g, '')),
         ];
     }
 
     update(dt, keys) {
 
         this.time += dt;
-        if (this.time > TIME_LIMIT) {
+        if (this.time < 0) {
+            // do nothing
+        } else if (this.time > TIME_LIMIT) {
             if (this.time > TIME_LIMIT + WINNER_COOLDOWN) {
-                this.next = STATES.TITLE;
+                this.next = STATES.GAME;
+                this.nextArgs = {
+                    names: this.players.map(p => p.name),
+                };
             }
         } else {
             if (this.flies.length < MAX_FLIES) { this.flies.push(new Insect); }
@@ -74,9 +80,9 @@ class Game extends State {
                 textBaseline: 'middle'
             });
         } else {
-            const time = (TIME_LIMIT - this.time) / 1000;
+            const time = ((TIME_LIMIT - this.time) % TIME_LIMIT) / 1000;
             this.renderer.isolatePath(() => {
-                this.renderer.strokeAndFillText(Math.floor(time), this.renderer.center.x, GAME_CONSTANTS.GAME_HEIGHT - 5);
+                this.renderer.strokeAndFillText(Math.ceil(time), this.renderer.center.x, GAME_CONSTANTS.GAME_HEIGHT - 5);
             }, {
                 font: '72pt Arial',
                 fillStyle: RAINBOW[Math.floor(this.frame / RAINBOW_FRAME_LIMITER) % RAINBOW.length],

@@ -5,7 +5,7 @@ class Title extends State {
 
     update(dt, keys) {
         if (keys.length > 0) {
-            this.next = STATES.GAME;
+            this.next = STATES.NAME_ENTRY;
         }
         return super.update(dt, keys);
     }
