@@ -1,4 +1,4 @@
-const { GAME_CONSTANTS, PLAYER_CONSTANTS } = require('../constants');
+const { GAME_CONSTANTS, PLAYER_CONSTANTS, PLAYER_COLORS } = require('../constants');
 const inputConfigs = require('../config/input');
 const { GAME_HEIGHT, GAME_WIDTH } = GAME_CONSTANTS;
 const { FROG_SIZE, MAX_INJURY, RIBBIT_REST, SPEED, TONGUE_TIP_SIZE } = PLAYER_CONSTANTS;
@@ -55,21 +55,7 @@ class Player {
                     textBaseline: 'bottom'
                 });
             renderer.scale(this.dir, 1);
-            let color;
-            switch (this.id) {
-                case 0:
-                    color = '#d00';
-                    break;
-                case 1:
-                    color = '#09f';
-                    break;
-                case 2:
-                    color = '#0f0';
-                    break;
-                case 3:
-                    color = '#90f';
-                    break;
-            }
+            const color = PLAYER_COLORS[this.id];
 
             renderer.drawSprite(`frog${color}`, -FROG_SIZE / 2, -FROG_SIZE / 2, FROG_SIZE, FROG_SIZE);
             // draw tongue

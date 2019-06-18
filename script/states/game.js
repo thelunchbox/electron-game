@@ -9,6 +9,7 @@ const MAX_FLIES = 10;
 const MAX_BEES = 2;
 const TIME_LIMIT = 60 * 1000;
 const WINNER_COOLDOWN = 5 * 1000;
+const RAINBOW_FRAME_LIMITER = 10;
 
 class Game extends State {
 
@@ -66,7 +67,7 @@ class Game extends State {
                 this.renderer.oscillateText(`WINNER: ${winner.name || 'P' + (winner.id + 1)}`, this.renderer.center.x, this.renderer.center.y, this.frame * 2, { amplitude: 10, outline: true });
             }, {
                 font: '72pt Arial',
-                fillStyle: RAINBOW[Math.floor(this.frame / 60) % RAINBOW.length],
+                fillStyle: RAINBOW[Math.floor(this.frame / RAINBOW_FRAME_LIMITER) % RAINBOW.length],
                 strokeStyle: '#000',
                 lineWidth: 10,
                 textAlign: 'center',
@@ -78,7 +79,7 @@ class Game extends State {
                 this.renderer.strokeAndFillText(Math.floor(time), this.renderer.center.x, GAME_CONSTANTS.GAME_HEIGHT - 5);
             }, {
                 font: '72pt Arial',
-                fillStyle: RAINBOW[Math.floor(this.frame / 60) % RAINBOW.length],
+                fillStyle: RAINBOW[Math.floor(this.frame / RAINBOW_FRAME_LIMITER) % RAINBOW.length],
                 strokeStyle: '#000',
                 lineWidth: 10,
                 textAlign: 'center',

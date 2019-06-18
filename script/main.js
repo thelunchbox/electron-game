@@ -3,6 +3,7 @@ const { getStartingState, getNextState } = require('./stateFactory');
 const Renderer = require('./renderer');
 const electronWindow = remote.getCurrentWindow();
 const path = require('path');
+const { PLAYER_COLORS } = require('./constants');
 
 let keys = [];
 window.addEventListener('keydown', ({ keyCode }) => {
@@ -38,10 +39,10 @@ const renderer = new Renderer(document.body);
 let state = getStartingState(renderer);
 
 // load any images - we could loop through the img folder if we needed to
-renderer.loadColoredSprite('frog', '#d00', './img/frog.svg');
-renderer.loadColoredSprite('frog', '#09f', './img/frog.svg');
-renderer.loadColoredSprite('frog', '#0f0', './img/frog.svg');
-renderer.loadColoredSprite('frog', '#90f', './img/frog.svg');
+renderer.loadColoredSprite('frog', PLAYER_COLORS[0], './img/frog.svg');
+renderer.loadColoredSprite('frog', PLAYER_COLORS[1], './img/frog.svg');
+renderer.loadColoredSprite('frog', PLAYER_COLORS[2], './img/frog.svg');
+renderer.loadColoredSprite('frog', PLAYER_COLORS[3], './img/frog.svg');
 
 let last = (new Date()).getTime();
 const update = () => {
