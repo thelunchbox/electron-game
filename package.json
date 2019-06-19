@@ -11,6 +11,9 @@
   },
   "build": {
     "appId": "game.electron",
+    "extraFiles": [
+      "img/*.*"
+    ],
     "mac": {
       "category": "sports.games"
     },

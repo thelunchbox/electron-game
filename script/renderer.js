@@ -1,5 +1,6 @@
 const IMAGE_CACHE = {};
 const fs = require('fs');
+const path = require('path');
 
 class Renderer {
     constructor(root, options = {}) {
