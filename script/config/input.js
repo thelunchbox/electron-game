@@ -37,6 +37,6 @@ const inputKeys = [{
     right: 67,
 }];
 
-const isDev = false;
+const { DEV_MODE } = require('../constants');
 
-module.exports = isDev ? inputKeysDev : inputKeys;
+module.exports = DEV_MODE ? inputKeysDev : inputKeys;

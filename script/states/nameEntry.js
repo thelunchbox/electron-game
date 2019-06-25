@@ -1,6 +1,7 @@
 const State = require('../state');
 const STATES = require('../states');
 const TextInput = require('../menu/textInput');
+const { DEV_MODE } = require('../constants');
 
 class NameEntry extends State {
     constructor(args) {
@@ -27,7 +28,7 @@ class NameEntry extends State {
     update(dt, keys) {
         this.playerInputs.forEach(p => p.update(dt, keys));
 
-        if (this.nextArgs.names.length > 0 && this.nextArgs.names.every(v => !!v)) {
+        if (DEV_MODE || this.nextArgs.names.length > 0 && this.nextArgs.names.every(v => !!v)) {
             this.next = STATES.GAME;
         }
         return super.update(dt, keys);

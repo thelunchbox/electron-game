@@ -21,12 +21,14 @@ class Player {
                 cooldown: 0,
                 x: null,
                 y: null,
+                id,
             };
     }
 
-    update(keys, frame, flies, bees) {
+    update(keys, frame, flies, bees, ribbits) {
         this._recoverInjury();
         this._handleTongue(keys, frame, flies, bees);
+        this._handleOtherRibbits(ribbits);
         this._handleRibbit(keys);
         this._movePlayer(keys);
     }
@@ -38,7 +40,7 @@ class Player {
                 renderer.arc(this.ribbit.x, this.ribbit.y, 2 * (RIBBIT_REST - this.ribbit.cooldown), 0, Math.PI * 2);
                 renderer.fill();
             }, {
-                    fillStyle: '#0f0',
+                    fillStyle: PLAYER_COLORS[this.id],
                     globalAlpha: this.ribbit.cooldown / RIBBIT_REST,
                 })
         }
@@ -133,7 +135,7 @@ class Player {
 
     _recoverInjury() {
         if (this.injury) {
-            this.injury -= 1;
+            this.injury = Math.max(0, this.injury - 1);
         }
     }
 
@@ -152,9 +154,21 @@ class Player {
                     cooldown: RIBBIT_REST,
                     x: this.x,
                     y: this.y,
+                    id: this.id,
                 };
             }
         }
+    }
+
+    _handleOtherRibbits(ribbits) {
+        ribbits.forEach(ribbit => {
+            const { x, y, cooldown, id } = ribbit;
+            if (this.id !== id &&
+                !this.injury &&
+                ((this.x - x) ** 2 + (this.y - y) ** 2) < ((2 * (RIBBIT_REST - cooldown)) ** 2)) {
+                this.injury = cooldown * MAX_INJURY / RIBBIT_REST;
+            }
+        });
     }
 
     _movePlayer(keys) {

@@ -22,10 +22,10 @@ class Game extends State {
         this.time = -STARTUP;
 
         this.players = [
-            new Player(400, 400, 0, args.names[0].replace(/_/g, '')),
-            new Player(400, 800, 1, args.names[1].replace(/_/g, '')),
-            new Player(1200, 400, 2, args.names[2].replace(/_/g, '')),
-            new Player(1200, 800, 3, args.names[3].replace(/_/g, '')),
+            new Player(400, 400, 0, (args.names[0] || 'coogs').replace(/_/g, '')),
+            new Player(400, 800, 1, (args.names[1] || 'coogs').replace(/_/g, '')),
+            new Player(1200, 400, 2, (args.names[2] || 'coogs').replace(/_/g, '')),
+            new Player(1200, 800, 3, (args.names[3] || 'coogs').replace(/_/g, '')),
         ];
     }
 
@@ -44,7 +44,7 @@ class Game extends State {
         } else {
             if (this.flies.length < MAX_FLIES) { this.flies.push(new Insect); }
             if (this.bees.length < MAX_BEES) { this.bees.push(new Bee); }
-            this.players.forEach(p => p.update(keys, this.frame, this.flies, this.bees));
+            this.players.forEach(p => p.update(keys, this.frame, this.flies, this.bees, this.players.map(p => p.ribbit)));
         }
 
         this.flies.forEach(fly => fly.update(this.players));

@@ -33,7 +33,10 @@ const RAINBOW = [
   '#b38b6d',
 ];
 
+const DEV_MODE = false;
+
 module.exports = {
+  DEV_MODE,
   GAME_CONSTANTS,
   PLAYER_COLORS,
   PLAYER_CONSTANTS,
