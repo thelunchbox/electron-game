@@ -251,6 +251,9 @@ class Renderer {
         if (IMAGE_CACHE[cacheName]) return;
         const i = new Image();
         let file = filepath;
+        if (__dirname.includes('app.asar')) {
+            file = path.join(__dirname, '../../../', file);
+        }
         if (!fs.existsSync(file)) {
             file = path.join(__dirname, 'img', file);
         }

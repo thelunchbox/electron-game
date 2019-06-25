@@ -8,7 +8,7 @@ const { GAME_CONSTANTS, RAINBOW } = require('../constants')
 const MAX_FLIES = 10;
 const MAX_BEES = 2;
 const STARTUP = 3000;
-const TIME_LIMIT = 3000; // 60 * 1000;
+const TIME_LIMIT = 60 * 1000;
 const WINNER_COOLDOWN = 5 * 1000;
 const RAINBOW_FRAME_LIMITER = 10;
 
