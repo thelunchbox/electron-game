@@ -8,33 +8,33 @@ const inputKeysDev = [{
 }, {}, {}, {}];
 
 const inputKeys = [{
-    tongue: 54,
-    ribbit: 55,
+    tongue: 55,
+    ribbit: 57,
     up: 192,
     down: 49,
     left: 50,
     right: 51,
 },{
-    tongue: 89,
-    ribbit: 85,
-    up: 61,
-    down: 81,
-    left: 87,
-    right: 69,
+    tongue: 85,
+    ribbit: 79,
+    up: 81,
+    down: 61,
+    left: 69,
+    right: 87,
 },{
     tongue: 71,
-    ribbit: 72,
+    ribbit: 75,
     up: 221,
     down: 220,
     left: 65,
     right: 83,
 },{
-    tongue: 78,
-    ribbit: 77,
-    up: 222,
-    down: 90,
-    left: 88,
-    right: 67,
+    tongue: 190,
+    ribbit: 191,
+    up: 88,
+    down: 67,
+    left: 90,
+    right: 222,
 }];
 
 const { DEV_MODE } = require('../constants');
