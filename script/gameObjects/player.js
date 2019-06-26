@@ -23,6 +23,9 @@ class Player {
                 y: null,
                 id,
             };
+
+        console.log(`Player ${this.id + 1} controls:`);
+        console.log(this.input);
     }
 
     update(keys, frame, flies, bees, ribbits) {
@@ -172,23 +175,43 @@ class Player {
     }
 
     _movePlayer(keys) {
+
+        let vx = 0, vy = 0;
+
         if (!this.tongue.active) {
             if (keys.includes(this.input.up)) {
-                this.y -= SPEED;
+                vy = -SPEED;
             } else if (keys.includes(this.input.down)) {
-                this.y += SPEED;
+                vy = SPEED;
             }
 
             if (keys.includes(this.input.left)) {
-                this.x -= SPEED;
+                vx = -SPEED;
                 this.dir = -1;
             } else if (keys.includes(this.input.right)) {
-                this.x += SPEED;
+                vx = SPEED;
                 this.dir = 1;
             }
 
-            this.x = Math.min(GAME_WIDTH - FROG_SIZE / 2, Math.max(FROG_SIZE / 2, this.x));
-            this.y = Math.min(GAME_HEIGHT - FROG_SIZE / 2, Math.max(FROG_SIZE / 2, this.y));
+            if (vy && vx) {
+                vx *= 0.707; // cos(pi/4)
+                vy *= 0.707; // sin(pi/4)
+            }
+
+            this.x = Math.min(
+                GAME_WIDTH - FROG_SIZE / 2,
+                Math.max(
+                    FROG_SIZE / 2,
+                    this.x + vx,
+                ),
+            );
+            this.y = Math.min(
+                GAME_HEIGHT - FROG_SIZE / 2,
+                Math.max(
+                    FROG_SIZE / 2,
+                    this.y + vy,
+                ),
+            );
         }
     }
 }

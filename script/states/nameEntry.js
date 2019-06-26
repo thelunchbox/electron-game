@@ -10,7 +10,7 @@ class NameEntry extends State {
         this.nextArgs = {};
 
         this.playerInputs = [];
-        this.nextArgs.names = [];
+        this.nextArgs.names = [null, null, null, null];
         for(let i = 0; i < 4; i++) {
             const player = new TextInput({
                 x: 70 + (400 * i),
@@ -28,7 +28,7 @@ class NameEntry extends State {
     update(dt, keys) {
         this.playerInputs.forEach(p => p.update(dt, keys));
 
-        if (DEV_MODE || this.nextArgs.names.length > 0 && this.nextArgs.names.every(v => !!v)) {
+        if (DEV_MODE || this.nextArgs.names.every(v => !!v)) {
             this.next = STATES.GAME;
         }
         return super.update(dt, keys);

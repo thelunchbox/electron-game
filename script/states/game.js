@@ -3,12 +3,12 @@ const STATES = require('../states');
 const Bee = require('../gameObjects/bee');
 const Insect = require('../gameObjects/insect');
 const Player = require('../gameObjects/player');
-const { GAME_CONSTANTS, RAINBOW } = require('../constants')
+const { GAME_CONSTANTS, RAINBOW, DEV_MODE } = require('../constants')
 
 const MAX_FLIES = 10;
 const MAX_BEES = 2;
 const STARTUP = 3000;
-const TIME_LIMIT = 60 * 1000;
+const TIME_LIMIT = DEV_MODE ? 60 * 60 * 1000 : 60 * 1000;
 const WINNER_COOLDOWN = 5 * 1000;
 const RAINBOW_FRAME_LIMITER = 10;
 
@@ -30,6 +30,7 @@ class Game extends State {
     }
 
     update(dt, keys) {
+        console.log(keys.join(' '));
 
         this.time += dt;
         if (this.time < 0) {

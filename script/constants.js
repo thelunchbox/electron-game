@@ -7,7 +7,7 @@ const PLAYER_CONSTANTS = {
   FROG_SIZE: 80,
   MAX_INJURY: 120,
   RIBBIT_REST: 60 * 5,  // 60 fps * number of seconds
-  SPEED: 10,
+  SPEED: 8,
   TONGUE_TIP_SIZE: 6,
 };
 
