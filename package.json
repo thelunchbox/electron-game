@@ -1,6 +1,6 @@
 {
   "name": "frog-battle",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Base for setting up a game in electron",
   "main": "index.js",
   "scripts": {
