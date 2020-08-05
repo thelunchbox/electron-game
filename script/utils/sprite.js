@@ -8,6 +8,7 @@ class Sprite {
     getRenderer().loadSprite(name, sheet);
     
     // setup
+    this.name = name;
     this.width = width;
     this.height = height;
     this.animations = animations;
@@ -47,8 +48,8 @@ class Sprite {
 
     const animation = this.animations[this.current];
     const [row, col] = animation.frames[this.frame];
-    const clipX = row * this.width;
-    const clipY = col * this.height;
+    const clipX = col * this.width;
+    const clipY = row * this.height;
 
     r.isolate(() => {
       if (mirror) r.scale(-1, 1);
