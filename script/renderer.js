@@ -232,6 +232,10 @@ class Renderer {
     }
   }
 
+  checkSprite(name) {
+    return Boolean(IMAGE_CACHE[name]);
+  }
+
   clearSprites() {
     IMAGE_CACHE = {};
   }

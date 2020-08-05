@@ -50,11 +50,12 @@ Aside from *most* of the standard functions of canvas, the renderer offers a few
 * center - gets an object containing `x` and `y`, representing the center point of the canvas
 
 #### Additional Functions
-* reset() - clears the entire canvas
-* loadSprite(name, filepath) - loads an image from the filepath into the internal IMAGE_CACHE by a reference name
-* clearSprites() - clears the internal IMAGE_CACHE
+* reset() - clears the entire canvas.
+* loadSprite(name, filepath) - loads an image from the filepath into the internal IMAGE_CACHE by a reference name.
+* checkSprite(name) - checks if a sprite has finished loading.
+* clearSprites() - clears the internal sprite IMAGE_CACHE.
 * drawSprite(name, ...args) - pulls an image from the internal IMAGE_CACHE and draws it using `context.drawImage()`, passing the rest of the `...args` through.
-* applySettings(settings) - applies the values of each supplied context property to the renderer
+* applySettings(settings) - applies the values of each supplied context property to the renderer.
 * path([settings, ]actions) - wraps the `actions` callback in a begin/closePath pseudo-block. If the optional `settings` are passed in, they are applied within the block before the actions are called.
     * `paths` in canvas are used to draw objects with the same properties. Paths gather all points given to `moveTo`, `lineTo`, and `arc` functions.
 * isolate([settings, ]actions) - wraps the `actions` callback in a save/restore pseudo-block. If the optional `settings` are passed in, they are applied within the block before the actions are called.
@@ -94,3 +95,49 @@ The following functions are *not* passed through to the renderer - to access the
 * closePath()
 * save()
 * restore()
+
+### Sprites
+There is a built-in `Sprite` class that you can use to help manage animated sprites.
+Its constructor takes the following arguments:
+* name - the name for this sprite type. This will be the name used to load the image, so that if you have two sprites with the same image, the image will only be loaded once.
+* sheet - the path to the sprite sheet image. It is assumed to be laid out in a grid with frames of uniform size.
+* width - the width of each column of your sprite sheet.
+* height - the height of each row of your sprite sheet.
+* animations - an object describing the animations of your sprite. Each key of this object should be the name of an animation for this sprite, and the values associated with the keys should be objects with two keys.
+  * frames: an array of arrays, each of which denotes [row, column, duration]
+    * row - the row where this frame is located
+    * column - the column where the frame is located
+    * duration (optional) - the number of frames this cell should be displayed before moving to the next
+      * if this is blank, this frame will be assumed to be infinite
+  * next: the key of the animation to transition to once this one has finished. In order to loop animations, they should set `next` to their own key name.
+    * if this is undefined, the last frame will be infinite
+See the following example:
+```
+{
+  stand: {
+    frames: [
+      [0, 0, 2], // 0,0 for 2 frames
+      [0, 1, 2], // 0,1 for 2 frames
+      [0, 2, 2], // 0,2 for 2 frames
+      [0, 1, 2], // 0,1 again for 2 frames
+    ],
+    next: 'stand', // loop this animation
+  },
+  injured: {
+    frames: [
+      [3, 0, 2],
+      [3, 1, 4],
+      [3, 2],
+    ],
+    // no next frame, we have to manually transition back to another animation
+  }
+}
+```
+
+The Sprite class has the following functions:
+* animate(stateKey) - sets the animation defined by `stateKey` as the current animation.
+* update() - updates the animation state as defined by the animation rules laid out above.
+* draw(x, y, { mirror, width, height}) - draws the current frame based on the animation state of the sprite.
+  * `x` and `y` are the top left of the location where the sprite will be drawn.
+  * `mirror` will flip the sprite along the x-axis if set to `true`.
+  * `width` and `height` set the size to draw the sprite onto the screen. These will default to the size of the sprite.
