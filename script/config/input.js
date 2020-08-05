@@ -18,7 +18,7 @@ const inputKeys = [{
     tongue: 85,
     ribbit: 79,
     up: 81,
-    down: 61,
+    down: 187,
     left: 69,
     right: 87,
 },{
