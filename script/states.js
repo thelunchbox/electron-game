@@ -1,4 +1,4 @@
 module.exports = {
-    TITLE: 1,
-    GAME: 2,
+  TITLE: 1,
+  GAME: 2,
 };

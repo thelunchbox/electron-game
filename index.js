@@ -1,11 +1,11 @@
-const {app, BrowserWindow} = require('electron');
+const { app, BrowserWindow } = require('electron');
 
 // Keep a global reference of the window object, if you don't, the window will
 // be closed automatically when the JavaScript object is garbage collected.
 let mainWindow;
 
-function createWindow () {
-  mainWindow = new BrowserWindow({width: 1600, height: 900});
+function createWindow() {
+  mainWindow = new BrowserWindow({ width: 1600, height: 900 });
   mainWindow.loadFile('index.html');
   // mainWindow.webContents.openDevTools()
 

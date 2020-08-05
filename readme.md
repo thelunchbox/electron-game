@@ -25,14 +25,26 @@ The `getNextState({next, args})` function returns the next state based on the en
 
 ### Draw
 
-The draw loop is inside `script/main.js`. The draw loop is responsible for drawing your current game state. The draw loop is automatically initialized with a `clear`, meaning everything on the canvas is erased, and you must redraw everything that you'd like to display on that frame. The draw loop calls the current state's `update(renderer)` function.
-`renderer` is a wrapper around the HTML5 Canvas API. You can use it *exactly* the same way you would use a 2d `context` retrieved from a canvas object, but there are some other functions added to help you as well.
+The draw loop is inside `script/main.js`. The draw loop is responsible for drawing your current game state. The draw loop is automatically initialized with a `clear`, meaning everything on the canvas is erased, and you must redraw everything that you'd like to display on that frame. The draw loop calls the current state's `draw()` function. In order to draw anything to the screen, you'll need a `renderer`. You can get this by calling
+
+```
+const { getRenderer } = require('./path/to/renderer.js`);
+.
+.
+draw() {
+  const renderer = getRenderer();
+}
+```
+
+`renderer` is a wrapper around the HTML5 Canvas API. You can use it *exactly* the same way you would use a 2d `context` retrieved from a canvas object, but there are some other functions added to help you as well. It is initialized in `main.js` using the `createRenderer(root)` function.
 
 ### Renderer
 
-Aside from ~all~ *most* of the standard functions of canvas, the renderer offers a few other helpful tools you can utilize.
+Aside from *most* of the standard functions of canvas, the renderer offers a few other helpful tools you can utilize.
 
 #### Additional Properties
+* fontSize - gets or sets the font size
+* fontFamily - gets or sets the font family
 * width - gets the canvas width in pixels
 * height - gets the canvas height in pixels
 * center - gets an object containing `x` and `y`, representing the center point of the canvas
@@ -43,11 +55,11 @@ Aside from ~all~ *most* of the standard functions of canvas, the renderer offers
 * clearSprites() - clears the internal IMAGE_CACHE
 * drawSprite(name, ...args) - pulls an image from the internal IMAGE_CACHE and draws it using `context.drawImage()`, passing the rest of the `...args` through.
 * applySettings(settings) - applies the values of each supplied context property to the renderer
-* path(actions, settings) - wraps the `actions` callback in a begin/closePath pseudo-block. If the optional `settings` are passed in, they are applied within the block before the actions are called.
-    * `paths` in canvas are used to draw objects with the same properties.
-* isolate(actions, settings) - wraps the `actions` callback in a save/restore pseudo-block. If the optional `settings` are passed in, they are applied within the block before the actions are called.
+* path([settings, ]actions) - wraps the `actions` callback in a begin/closePath pseudo-block. If the optional `settings` are passed in, they are applied within the block before the actions are called.
+    * `paths` in canvas are used to draw objects with the same properties. Paths gather all points given to `moveTo`, `lineTo`, and `arc` functions.
+* isolate([settings, ]actions) - wraps the `actions` callback in a save/restore pseudo-block. If the optional `settings` are passed in, they are applied within the block before the actions are called.
     * `isolated states` in canvas are used to draw objects with the same set of tranformations and/or properties.
-* isolatePath(actions, settings) - wraps the `actions` callback in both a save/restore and begin/closePath pseudo-block. If the optional `settings` are passed in, they are applied within the inner block before the actions are called.
+* isolatePath([settings, ]actions) - wraps the `actions` callback in both a save/restore and begin/closePath pseudo-block. If the optional `settings` are passed in, they are applied within the inner block before the actions are called.
 * strokeAndFillText(text, x, y) - calls both stroke and then fill text in the same position. Creates outlined text.
 * fillCircle(x, y, radius) - creates a filled in circle.
 * strokeCircle(x, y, radius) - creates a hollow circle.
