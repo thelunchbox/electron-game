@@ -282,6 +282,37 @@ class Renderer {
     this.context.fillText(text, x, y);
   }
 
+  drawParagraph(text, x, y, width, stroke = false) {
+      const height = this.fontSize * 50 / 36;
+      const words = text.split(' ');
+      const paragraph = [];
+      let line = 0;
+      words.forEach(word => {
+          if (word == '\n') {
+              line ++;
+              paragraph[line] = '';
+              return;
+          }
+          const current = paragraph[line];
+          const test = current ? current + ' ' + word : word;
+          const testWidth = this.context.measureText(test).width;
+          if (testWidth <= width) {
+              paragraph[line] = test;
+          } else {
+              line++;
+              paragraph[line] = word;
+          }
+      });
+      if (stroke) {
+          paragraph.forEach((sentence, i) => {
+            this.context.strokeText(sentence.trim(), x, y + i * height);
+          });
+      }
+      paragraph.forEach((sentence, i) => {
+        this.context.fillText(sentence.trim(), x, y + i * height);
+      });
+  }
+
   fillCircle(x, y, radius) {
     this.arc(x, y, radius, 0, Math.PI * 2);
     this.fill();
@@ -313,5 +344,5 @@ function createRenderer(root) {
 
 module.exports = {
   createRenderer,
-  getRenderer: () => renderer,
+  getRenderer: () => renderer
 };

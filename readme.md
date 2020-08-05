@@ -11,7 +11,7 @@ To perform a *state transition*, the update function needs to return an object c
 
 ### States
 
-In `electron-game`, the every game state should extend the `State` class. When you extend `State`, a few things are done for you.
+In `electron-game`, every game state should extend the `State` class. When you extend `State`, a few things are done for you.
 * The `constructor` takes in an object `args` which can contain any key/value pairs that might need to be transferred between states. The constructor will attach `args` to `this.args`, as well as initializing `this.frame` to `0` - meaning that each state has its own frame counter that resets when a transition occurs.
     * **IMPORTANT:** be sure to call `super(args);` at the *beginning* of each state's `constructor` function in order to get this built-in behavior.
 * The base class `update` function will automatically increment `this.frame`, as well as automatically take care of returning the next state. In order to initiate a *state transition*, simply set `this.next` to the enum for the state you'd like next. More on this in the **State Factory** section below.
@@ -65,6 +65,7 @@ Aside from *most* of the standard functions of canvas, the renderer offers a few
 * strokeCircle(x, y, radius) - creates a hollow circle.
 * strokeAndFillCircle(x, y, radius) - creates an outlined circle.
 * strokeAndFillRect(x, y, width, height) - creates an outlined rectangle.
+* drawParagraph(text, x, y, width, stroke = false) - auto-wraps the text at `width`, and optionally applies a stroke to the text if `stroke` is `true`.
 
 ##### Path Drawing
 The following functions take in an array of points in the format `{x, y}` and an optional `options` object.
