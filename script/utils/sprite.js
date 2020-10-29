@@ -15,10 +15,12 @@ class Sprite {
     this.animate(Object.keys(animations)[0]); // default to first animation
   }
 
-  animate(stateKey) {
-    this.current = stateKey;
-    this.frame = 0;
-    [, , this.duration] = this.animations[this.current].frames[this.frame] || INFINITE;
+  animate(stateKey, force = false) {
+    if (force || this.current !== stateKey) {
+      this.current = stateKey;
+      this.frame = 0;
+      [, , this.duration] = this.animations[this.current].frames[this.frame] || INFINITE;
+    }
   }
 
   update() {
@@ -32,7 +34,7 @@ class Sprite {
       if (this.frame + 1 === animation.frames.length) {
         // if we've reached the end of the animation
         if (animation.next) {
-          this.animate(animation.next); // if next = current, the animation will loop
+          this.animate(animation.next, true); // if next = current, the animation will loop
         }
       } else { // just go to the next animation frame
         this.frame += 1;
