@@ -5,7 +5,7 @@ class State {
     this.frame = 0;
   }
 
-  update(dt, keys) {
+  update() { // igoring dt and keys
     if (this.frame == Number.MAX_SAFE_INTEGER) {
       this.frame = 0;
     } else {
@@ -15,7 +15,7 @@ class State {
       return {
         next: this.next,
         args: this.nextArgs,
-      }
+      };
     }
   }
 

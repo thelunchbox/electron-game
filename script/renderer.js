@@ -1,4 +1,4 @@
-const IMAGE_CACHE = {};
+let IMAGE_CACHE = {};
 
 function reconcileArgs(arg1, arg2) {
   if (typeof (arg1) === 'function') {
@@ -27,9 +27,9 @@ class Renderer {
         scale = root.offsetHeight / canvas.height;
       }
       canvas.style.transform = 'translate(-50%, -50%) scale(' + scale + ', ' + scale + ')';
-    }
+    };
 
-    window.addEventListener('resize', event => {
+    window.addEventListener('resize', () => {
       resizeCanvas();
     });
 
@@ -154,15 +154,15 @@ class Renderer {
     const textWidth = size.width + (text.length * padding);
     let x0 = x;
     switch (this.textAlign) {
-      case 'center':
-        x0 = x - textWidth / 2;
-        break;
-      case 'right':
-        x0 = x - textWidth;
-        break;
-      case 'left':
-      default:
-        break;
+    case 'center':
+      x0 = x - textWidth / 2;
+      break;
+    case 'right':
+      x0 = x - textWidth;
+      break;
+    case 'left':
+    default:
+      break;
     }
     this.context.save();
     this.context.textAlign = 'left';
@@ -185,7 +185,7 @@ class Renderer {
     others.forEach(point => {
       if (point.settings) {
         this.context.save();
-        this.applySettings(settings);
+        this.applySettings(point.settings);
       }
       this.context.lineTo(point.x, point.y);
       if (point.settings) this.context.restore();
@@ -229,7 +229,7 @@ class Renderer {
     i.src = filepath;
     i.onload = () => {
       IMAGE_CACHE[name] = i;
-    }
+    };
   }
 
   checkSprite(name) {
@@ -287,34 +287,34 @@ class Renderer {
   }
 
   drawParagraph(text, x, y, width, stroke = false) {
-      const height = this.fontSize * 50 / 36;
-      const words = text.split(' ');
-      const paragraph = [];
-      let line = 0;
-      words.forEach(word => {
-          if (word == '\n') {
-              line ++;
-              paragraph[line] = '';
-              return;
-          }
-          const current = paragraph[line];
-          const test = current ? current + ' ' + word : word;
-          const testWidth = this.context.measureText(test).width;
-          if (testWidth <= width) {
-              paragraph[line] = test;
-          } else {
-              line++;
-              paragraph[line] = word;
-          }
-      });
-      if (stroke) {
-          paragraph.forEach((sentence, i) => {
-            this.context.strokeText(sentence.trim(), x, y + i * height);
-          });
+    const height = this.fontSize * 50 / 36;
+    const words = text.split(' ');
+    const paragraph = [];
+    let line = 0;
+    words.forEach(word => {
+      if (word == '\n') {
+        line ++;
+        paragraph[line] = '';
+        return;
       }
+      const current = paragraph[line];
+      const test = current ? current + ' ' + word : word;
+      const testWidth = this.context.measureText(test).width;
+      if (testWidth <= width) {
+        paragraph[line] = test;
+      } else {
+        line++;
+        paragraph[line] = word;
+      }
+    });
+    if (stroke) {
       paragraph.forEach((sentence, i) => {
-        this.context.fillText(sentence.trim(), x, y + i * height);
+        this.context.strokeText(sentence.trim(), x, y + i * height);
       });
+    }
+    paragraph.forEach((sentence, i) => {
+      this.context.fillText(sentence.trim(), x, y + i * height);
+    });
   }
 
   fillCircle(x, y, radius) {

@@ -6,10 +6,10 @@ const getStartingState = () => new Title({});
 
 const getNextState = ({ next, args }) => {
   switch (next) {
-    case STATES.TITLE:
-      return new Title(args);
-    case STATES.GAME:
-      return new Game(args);
+  case STATES.TITLE:
+    return new Title(args);
+  case STATES.GAME:
+    return new Game(args);
   }
 };
 
