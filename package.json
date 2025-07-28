@@ -1,11 +1,14 @@
 {
   "name": "electron-game-base",
-  "version": "1.0.0",
+  "version": "2.0.0",
   "description": "Base for setting up a game in electron",
-  "main": "index.js",
+  "main": "main.js",
   "scripts": {
+    "lint": "eslint .  --ext .js",
+    "lint-one": "eslint",
+    "lint-fix": "eslint --fix .  --ext .js",
     "start": "electron .",
-    "test": "npm test"
+    "test": "echo \"NOT CONFIGURED\""
   },
   "build": {
     "appId": "game.electron",
@@ -21,8 +24,12 @@
     }
   },
   "devDependencies": {
-    "electron": "^3.0.13",
-    "electron-builder": "^22.8.1"
+    "@eslint/eslintrc": "^3.3.1",
+    "@eslint/js": "^9.32.0",
+    "electron": "^37.2.4",
+    "electron-builder": "^26.0.12",
+    "eslint": "^9.31.0",
+    "globals": "^16.3.0"
   },
   "author": {
     "name": "Alex Merkert",

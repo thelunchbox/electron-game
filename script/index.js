@@ -1,30 +1,45 @@
-const { remote } = require('electron');
+const { ipcRenderer } = require('electron');
 const { getStartingState, getNextState } = require('./stateFactory');
 const { createRenderer } = require('./renderer');
-const electronWindow = remote.getCurrentWindow();
-const path = require('path');
 
 const keys = [];
-window.addEventListener('keydown', ({ keyCode }) => {
+
+window.addEventListener('keydown', event => {
+  let keyCode = event.keyCode;
+  if (event.ctrlKey) {
+    switch (keyCode) {
+    case 73: // ctrl + i for dev tools
+      keyCode = 123;
+      break;
+    case 70: // ctrl + f for full screen
+      keyCode = 122;
+      break;
+    case 82: // ctrl + r to refresh
+      keyCode = 116;
+      break;
+    }
+  }
+  const index = keys.indexOf(keyCode);
   switch (keyCode) {
-    case 27:
-      electronWindow.close();
-      break;
-    case 121: // F10
-    case 122: // F11
-      electronWindow.setKiosk(!electronWindow.isKiosk());
-      break;
-    case 116: // F5
-      electronWindow.reload();
-      break;
-    case 123: // F12
-      remote.getCurrentWebContents().openDevTools();
-      break;
-    default: // all others
-      const index = keys.indexOf(keyCode);
-      if (index > -1) return;
-      keys.push(keyCode);
-      break;
+  case 27:
+    ipcRenderer.send('close');
+    break;
+  case 121: // F10
+  case 122: // F11
+    console.log('toggling kiosk mode');
+    ipcRenderer.send('toggle-kiosk');
+    break;
+  case 116: // F5
+    state.unload && state.unload();
+    ipcRenderer.send('reload');
+    break;
+  case 123: // F12
+    ipcRenderer.send('open-dev-tools');
+    break;
+  default: // all others
+    if (index > -1) return;
+    keys.push(keyCode);
+    break;
   }
 });
 
