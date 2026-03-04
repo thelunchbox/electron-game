@@ -3,6 +3,7 @@ const path = require('path');
 const url = require('url');
 
 let mainWindow;
+let toolWindow;
 
 app.commandLine.appendSwitch('autoplay-policy', 'no-user-gesture-required');
 
@@ -70,12 +71,47 @@ function createWindow() {
     return !canceled ? filePaths[0] : null;
   });
 
+  ipcMain.handle('open-sprite-tool', async () => {
+    // Create the browser window.
+    toolWindow = new BrowserWindow({
+      width: 1000,
+      height: 600,
+      icon: 'build/icon.png',
+      title: '** GAME TITLE GOES HERE **',
+      kiosk: false, // true for full screen, false for windowed
+      webPreferences: {
+        nodeIntegration: true,
+        contextIsolation: false,
+      },
+    });
+
+    // and load the index.html of the app.
+    toolWindow.loadURL(url.format({
+      pathname: path.join(__dirname, 'tools/sprite.html'),
+      protocol: 'file:',
+      slashes: true,
+    }));
+
+    toolWindow.setMenu(null);
+
+    ipcMain.handle('show-select-folder', async (event, options) => {
+      const { canceled, directory } = await dialog.showOpenDialog(toolWindow, {
+        title: 'Select image folder',
+        properties: [
+          'openDirectory'
+        ],
+      });
+      return !canceled ? directory : null;
+    });
+  });
+
   // Emitted when the window is closed.
   mainWindow.on('closed', function () {
     // Dereference the window object, usually you would store windows
     // in an array if your app supports multi windows, this is the time
     // when you should delete the corresponding element.
     mainWindow = null;
+    toolWindow = null;
   });
 }
 

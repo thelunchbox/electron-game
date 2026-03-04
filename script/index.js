@@ -5,35 +5,35 @@ const { createRenderer } = require('./renderer');
 const keys = [];
 
 window.addEventListener('keydown', event => {
-  let keyCode = event.keyCode;
+  let keyCode = event.key;
   if (event.ctrlKey) {
     switch (keyCode) {
-    case 73: // ctrl + i for dev tools
-      keyCode = 123;
+    case 'i': // ctrl + i for dev tools
+      keyCode = 'F12';
       break;
-    case 70: // ctrl + f for full screen
-      keyCode = 122;
+    case 'f': // ctrl + f for full screen
+      keyCode = 'F11';
       break;
-    case 82: // ctrl + r to refresh
-      keyCode = 116;
+    case 'r': // ctrl + r to refresh
+      keyCode = 'F5';
       break;
     }
   }
   const index = keys.indexOf(keyCode);
   switch (keyCode) {
-  case 27:
+  case 'Escape':
     ipcRenderer.send('close');
     break;
-  case 121: // F10
-  case 122: // F11
+  case 'F10':
+  case 'F11':
     console.log('toggling kiosk mode');
     ipcRenderer.send('toggle-kiosk');
     break;
-  case 116: // F5
+  case 'F5':
     state.unload && state.unload();
     ipcRenderer.send('reload');
     break;
-  case 123: // F12
+  case 'F12':
     ipcRenderer.send('open-dev-tools');
     break;
   default: // all others
